@@ -1,6 +1,8 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp or kylemede@gmail.com
 from __future__ import absolute_import
 import numpy as np
+import os
+import shutil
 import KMlogger
 
 log = KMlogger.getLogger('main.tools',lvl=100,addFH=False)
@@ -124,4 +126,52 @@ def load_rv_data(filename):
         log.critical("a problem occured while trying to load RV data.  \nPlease check it is formatted correctly.")
     return (epochs_rv, rv, rv_err, rv_inst_num)
 
+def load_settings_dict(settings_filename):
+    """
+    A way to load in settings from a settings an ExoSOFT type settings file.
+    
+    Users can choose to copy and modify the one provided in the 'examples' 
+    directory to match the system they are working on, or write their own 
+    function like this to load in the required parameters/arrays... that 
+    comprise all the inputs for ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.
+    
+    NOTE: THE DICTIONARY KEY WORDS USED HERE DO NOT WORK FOR OLD EXOSOFT SETTINGS FILES.  NEED TO CHANGE ALL OF THEM TO THIS FORMAT EVENTUALLY!!!!
+    """   
+    # First see if try to remove any old settings files.
+    try:
+        os.remove('./ExoSOFTmodel/temp/settings.py')
+    except:
+        pass
+    cwd = os.getenv('PWD')
+    # Copy settings file to temp dir
+    shutil.copy(settings_filename,'temp/settings.py')
+    # cd into temp dir, import settings then cd back to pwd
+    os.chdir('.ExoSOFTmodel/temp')
+    from .settings import settings as sd
+    os.chdir(cwd)
+    
+    ## load up modified versions of dictionary elements needed by ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.
+    #[m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
+    range_mins = [sd['m1_min'], sd['m2_min'], sd['para_min'], sd['long_an_min'], 
+                  sd['ecc_min'], sd['t_min'], sd['p_min'], sd['inc_min'], 
+                  sd['arg_peri_min']]
+    for i in range(len(sd['offset_mins'])):
+        range_mins.append(sd['offset_mins'][i])
+    range_maxs = [sd['m1_max'], sd['m2_max'], sd['para_max'], sd['long_an_max'], 
+                  sd['ecc_max'], sd['t_max'], sd['p_max'], sd['inc_max'], 
+                  sd['arg_peri_max']]
+    for i in range(len(sd['offset_maxs'])):
+        range_maxs.append(sd['offset_maxs'][i])
+    
+    sd['range_maxs'] = range_maxs
+    sd['range_mins'] = range_mins
+    sd['num_offsets'] = len(sd['offset_mins'])
+    
+    sd['di_only'] = True
+    if sd['data_mode'] is 'RV':
+        sd['di_only'] = False   
+    
+    return sd
+    
+    
 #EOF

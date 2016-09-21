@@ -1,37 +1,23 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 
-dirs_dict = {
-# full path to input astrometry data file. [string]
-'DIdataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFT/examples/DIdata.dat',                
-# full path to input radial velocity data file. [string]
-'RVdataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFT/examples/RVdata.dat',        
-}
-
 params_dict = {
 #####################################
 # Special Settings for the models ###
 #####################################
 # Operate in low eccenctricity mode? [bool]
 # Then step through in sqrt(e)sin(omega) and sqrt(e)cos(omega) instead of e & omega directly
-'lowEcc'   : (True,"low eccentricty stepping?"),
+'low_ecc'   : False,
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
-'TcStep' : (False,"Step in Tc not T?"),
+'vary_tc' : False,
 # take the time of center transit (inferior conjunction) into account? [bool]
-'TcEqualT' : (True,"Fix Tc=T?"),
+'tc_equal_to' : True,
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
+'omega_offset_rv' : 0.0,
 ##################################################
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in DI orbit fit [double]
-'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
-}
+'omega_offset_di' : 0.0,
 
-data_dict = {
-# Is the data in the DIdata.dat in PA,SA format? else, it is in E,N (x,y) format [bool]
-'pasa'     : (False,"Is astrometry data in PA,SA format?"),
-}
-
-ranges_dict={
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
@@ -79,48 +65,55 @@ ranges_dict={
 'offset_maxs' :[3],
 }
 
+data_dict = {
+             # full path to input astrometry data file. [string]
+'di_dataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFT/examples/DIdata.dat',                
+# full path to input radial velocity data file. [string]
+'rv_dataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFTmodel/examples/RVdata.dat', 
+# data mode, choices {'RV','DI','3D'} [string]
+'data_mode' : '3D',
+# Is the data in the DIdata.dat in PA,SA format? else, it is in E,N (x,y) format [bool]
+'pasa'     : False,
+}
+
 priors_dict={
 ############################
 #    System Information    #
 # ONLY FOR GAUSSIAN PRIORS #
 ############################
 #best estimate of primary's mass, and error [double][Msun]
-'m1_est' : 0.0,
-'m1_err' : 0.0,
+'m1_est'  : 0.0,
+'m1_err'  : 0.0,
 #best estimate of secondary's mass, and error [double][Msun]
-'m2_est' : 0.0,
-'m2_err' : 0.0,
+'m2_est'  : 0.0,
+'m2_err'  : 0.0,
 #best estimate of parallax, and error [double][mas]
-'para_est'  : 50,
-'para_err'  : 2.5,
+'para_est': 50,
+'para_err': 2.5,
 ##################################
-# Push prior functions into dict #
+# Choice of which priors to use  #
 ##################################
 # For ALL: False indicates a flat prior. True indicates to use defaults.
-'ecc_prior'    :(True,'Use prior for eccentricity?'),
-'p_prior'    :(True,'Use prior for period?'),
+'ecc_prior'  : False,
+'p_prior'    : True,
 # For the inclination prior, use strings or booleans to inducate the specific 
 # function to use.  Either sin(i), cos(i) or flat.  True indicates sin(i).
-'inc_prior'  :('cos',"inclination prior ['cos','sin',True or False]"),
+'inc_prior'  : 'cos',
 # For m1 and m2: use strings to indicate specific prior function.
 # For m1: ['PDMF', 'IMF', True or False], default is 'PDMF'.
-'m1_prior':(True,"m1 prior "),
+'m1_prior'   : True,
 # for m2: ['PDMF', 'IMF', 'CMF', True or False], default is 'CMF'
-'m2_prior':(True,"m2 prior ['PDMF', 'IMF', 'CMF', True or False]"),
-'para_prior' :(True,'Use prior for parallax?'),
+'m2_prior'   : True,
+'para_prior' : True,
 }
 
 ######################
 # Merge All dicts#
 ######################
 settings = {}
-for key in dirs_dict:
-    settings[key]=dirs_dict[key]
 for key in params_dict:
     settings[key]=params_dict[key]
 for key in data_dict:
     settings[key]=data_dict[key]
-for key in ranges_dict:
-    settings[key]=ranges_dict[key]
 for key in priors_dict:
     settings[key]=priors_dict[key]

@@ -86,7 +86,7 @@ class ExoSOFTparams(object):
         self.stored_pars = np.zeros((12+num_offsets),dtype=np.dtype('d'))
         self.offsets = np.zeros((num_offsets),dtype=np.dtype('d'))
         #check_pars: [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
-        self.check_pars = np.zeros((9),dtype=np.dtype('d'))
+        self.check_pars = np.zeros((9+num_offsets),dtype=np.dtype('d'))
         
     def make_model_in(self):
         """
@@ -127,20 +127,20 @@ class ExoSOFTparams(object):
         allowed ranges.
         Range arrays corrispond to parameters in:
         [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
-        """
-        check_pars = np.zeros((9))
-        check_pars[0:5] = self.model_in_pars[0:5]
+        """        
+        self.check_pars[0:5] = self.model_in_pars[0:5]
         if self.vary_tc:
-            check_pars[5] = self.model_in_pars[6]
+            self.check_pars[5] = self.model_in_pars[6]
         else:
-            check_pars[5] = self.model_in_pars[5]
-        check_pars[6:9] = self.model_in_pars[7:10]
+            self.check_pars[5] = self.model_in_pars[5]
+        self.check_pars[6:9] = self.model_in_pars[7:10]
+        self.check_pars[9:] = self.offsets[:]
         
-        if len(check_pars)!=len(self.maxs)!=len(self.mins):
+        if len(self.check_pars)!=len(self.maxs)!=len(self.mins):
             print("LENGTH OF CHECK_PARAMS IS NOT EQUAL TO LENGTH OF MINS OR MAXS!!!")
         in_range = True
         for i in range(9):
-            if (check_pars[i]>self.maxs[i]) or (check_pars[i]<self.mins[i]):
+            if (self.check_pars[i]>self.maxs[i]) or (self.check_pars[i]<self.mins[i]):
                 in_range = False
         return in_range
 

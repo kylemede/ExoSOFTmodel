@@ -50,6 +50,6 @@ setup(
         'Programming Language :: Python'
         ],
     #include_dirs = [np.get_include()],
-    install_requires = ['psutil','six','KMlogger','numpy','cython','distutils'],
+    install_requires = ['psutil','six','KMlogger','numpy','cython','distutils','shutil'],
     #ext_modules=[]
 )

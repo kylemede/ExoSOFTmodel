@@ -3,3 +3,4 @@ KMlogger
 numpy
 cython
 distutils
+shutil
