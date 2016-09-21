@@ -10,6 +10,9 @@ An astronomical model for calculating the predicted astrometry and radial veloci
 
 MORE INFORMATION TO COME.
 
+Examples made both showing how to use ExoSOFTmodel with the popular emcee, and 
+ExoSOFT.
+
 
 Installation Notes
 ==================
