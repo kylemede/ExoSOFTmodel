@@ -4,6 +4,7 @@ import multiprocessing
 import matplotlib.pyplot as plt
 import ExoSOFTmodel
 import emcee
+from six.moves import range
 
 
 def main():
@@ -22,7 +23,7 @@ def main():
     (epochs_rv, rv, rv_err, rv_inst_num) = ExoSOFTmodel.load_rv_data(sd['rv_dataFile'])
     
     Data = ExoSOFTmodel.ExoSOFTdata(epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
-                 rv, rv_err, rv_inst_num, sd['pasa'])
+                 rv, rv_err, rv_inst_num,sd['data_mode'], sd['pasa'])
     
     Priors = ExoSOFTmodel.ExoSOFTpriors(ecc_prior=sd['ecc_prior'], 
              p_prior=sd['p_prior'], inc_prior=sd['inc_prior'], 

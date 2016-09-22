@@ -161,7 +161,7 @@ class ExoSOFTdata(object):
                   as epochs_rv, rv, and rv_err.
     """
     def __init__(self, epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
-                 rv, rv_err, rv_inst_num, pasa=False):
+                 rv, rv_err, rv_inst_num, data_mode, pasa=False):
         
         self.epochs_di = epochs_di
         self.epochs_rv = epochs_rv
@@ -179,6 +179,7 @@ class ExoSOFTdata(object):
         self.rv_model = np.zeros((len(epochs_rv)),dtype=np.dtype('d'))
         # dataset/instrument number
         self.rv_inst_num = rv_inst_num
+        self.data_mode = data_mode
         self.pasa = pasa
 
 def ln_posterior(pars, Model, Data, Params, Priors):
@@ -207,16 +208,17 @@ def ln_posterior(pars, Model, Data, Params, Priors):
     if in_range:         
         ## Call Cython func to calculate orbit. ie. -> predicted x,y,rv values.
         cytools.orbit(Params.model_in_pars, Params.offsets, Data.pasa, 
-                      Data.epochs_di, Data.epochs_rv, Data.rv_inst_num, 
-                      Data.rapa_model, Data.decsa_model, Data.rv_model)
+                      Data.data_mode, Data.epochs_di, Data.epochs_rv, 
+                      Data.rv_inst_num, Data.rapa_model, Data.decsa_model, 
+                      Data.rv_model)
                 
         ## Calculate chi squareds and then the 3d log likelihood
         #  NOTE: The log(2*pi*sigma**2) term is not included here as the 
         #        likelihood is always used as a likelihood ratio.
         chi_sqr_rv, chi_sqr_rapa, chi_sqr_decsa = 0, 0, 0
-        if len(Data.epochs_rv)>0:
+        if (len(Data.epochs_rv)>0) and (Data.data_mode!='DI'):
             chi_sqr_rv = np.sum((Data.rv-Data.rv_model)**2 / Data.rv_err**2)
-        if len(Data.epochs_di)>0:
+        if (len(Data.epochs_di)>0) and (Data.data_mode!='RV'):
             chi_sqr_rapa = np.sum((Data.rapa-Data.rapa_model)**2 / Data.rapa_err**2)
             chi_sqr_decsa = np.sum((Data.decsa-Data.decsa_model)**2 / Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa

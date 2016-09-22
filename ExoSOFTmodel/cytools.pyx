@@ -235,7 +235,7 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
     model_in_pars[0:9] = m1, m2, parallax, long_an, ecc, to, tc, p, inc
     model_in_pars[9:14] = arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k
     
-def orbit(double [:] model_in_pars, double [:] offsets, bint pasa,
+def orbit(double [:] model_in_pars, double [:] offsets, bint pasa, str data_model,
           double [:] epochs_di, double [:] epochs_rv, int [:] rv_inst_num,
           double [:] rapa_model, double [:] decsa_model, double [:] rv_model):
     """
@@ -255,12 +255,12 @@ def orbit(double [:] model_in_pars, double [:] offsets, bint pasa,
     [arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k] = model_in_pars[9:14]
     
     ## run through each epoch and calc predicted x,y,rv as requested
-    if npts_rv>0:       
+    if (npts_rv>0) and (data_model!='DI'):       
         ## calc predicted rv if necessary
         orbit_rv(epochs_rv, ecc, to, tc, p, inc, arg_peri_rv, k, offsets, 
                   rv_inst_num,rv_model)
             
-    if npts_di>0:
+    if (npts_di>0) and (data_model!='RV'):
         ## calc predicted DI if necessary
         orbit_di(epochs_di, long_an, ecc, to, tc, p, inc, arg_peri_di, 
                  a_tot_au, parallax, rapa_model, decsa_model, pasa)
