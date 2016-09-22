@@ -15,13 +15,14 @@ cdef anomalies(double p, double tc, double to, double ecc,
     """
     cdef double ma, multiples, e_prime
     cdef int newton_count
-    cdef bool warnings_on
+    cdef bint warnings_on
     
     cdef extern from "math.h":
         double sin(double _x)
         double cos(double _x)
         double acos(double _x)
         double fabs(double _x)
+        double floor(double _x)
         
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     warnings_on = True  #$$$$ for debugging, kill this after finished testing?
@@ -30,7 +31,7 @@ cdef anomalies(double p, double tc, double to, double ecc,
     ## Calc Mean Anomaly
     ma = (2.0*const.pi*(epoch-2.0*to+tc))/(p*const.days_per_year)
     #Find if over one full orbit and shift into [-2pi,2pi]
-    multiples = double(int(ma/2.0*const.pi))
+    multiples = floor(ma/2.0*const.pi)
     ma -= multiples*2.0*const.pi
     # shift into [0,2pi]
     if ma<0:
@@ -67,9 +68,9 @@ cdef anomalies(double p, double tc, double to, double ecc,
             if ea>const.pi:
                 ta = 2.0*const.pi - ta
 
-cdef orbit_rv(double [:] epochs, double p, double tc, double to, double ecc, 
-              double [:] offsets, int [:] rv_inst_num, double k, double arg_peri_rv,
-              double [:] rv_model):
+cdef orbit_rv(double [:] epochs, double ecc, double to, double tc, double p, 
+              double inc, double arg_peri_rv, double k, double [:] offsets,
+               int [:] rv_inst_num, double [:] rv_model):
     """ 
     Calculates the predicted rv for a each epoch in epochs array.
      
@@ -80,6 +81,8 @@ cdef orbit_rv(double [:] epochs, double p, double tc, double to, double ecc,
     cdef extern from "math.h":
         double cos(double _x)
         
+    #set ea,ta as zeros for now, they get corrected in anomalies function.
+    ea, ta = 0.0, 0.0
     npts = epochs.shape[0]
     arg_peri_rad = arg_peri_rv*(const.pi/180.0)
     
@@ -91,21 +94,25 @@ cdef orbit_rv(double [:] epochs, double p, double tc, double to, double ecc,
         rv = k*( cos(ta+arg_peri_rad) + ecc*cos(arg_peri_rad) )
         rv_model[i] = rv + offsets[rv_inst_num[i]]
         
-cdef orbit_di(double [:] epochs, double p, double ecc, double to, double tc,
-              double arg_peri_di, double long_an,double a_tot_au, double parallax,
-              double [:] rapa_model, double [:] decsa_model, bool pasa):                 
+         
+cdef orbit_di(double [:] epochs, double long_an, double ecc, double to, 
+              double tc, double p, double inc, double arg_peri_di,
+              double a_tot_au, double parallax, double [:] rapa_model,
+              double [:] decsa_model, bint pasa):                 
     """
     Calculates the predited x/RA/PA and y/Dec/SA for a single epoch.
     """
     cdef double ea, ta, a_thi, b_thi, f_thi, g_thi, x_thi, y_thi, ra, dec, pa, sa
-    cdef doubl long_an_rad, arg_peri_rad, inc_rad, sep_arcsec
+    cdef double long_an_rad, arg_peri_rad, inc_rad, sep_arcsec
     cdef int npts
     cdef extern from "math.h":
         double sin(double _x)
         double cos(double _x)
         double sqrt(double _x)
         double atan2(double _x,double _y)
-    
+        
+    #set ea,ta as zeros for now, they get corrected in anomalies function.
+    ea, ta = 0.0, 0.0
     npts = epochs.shape[0]
     long_an_rad = long_an*(const.pi/180.0)
     arg_peri_rad = arg_peri_di*(const.pi/180.0)
@@ -142,32 +149,34 @@ cdef orbit_di(double [:] epochs, double p, double ecc, double to, double tc,
             rapa_model[i] = ra
             decsa_model[i] = dec
         
-def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to, 
-                     bool di_only, double omega_offset_di, double omega_offset_rv,
+def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,
+                     bint di_only, double omega_offset_di, double omega_offset_rv,
                      double [:] offsets, double [:] model_in_pars):
     # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
     # model_in_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
     
-    cdef double m1, m2, parallax, long_an, ecc, p, inc, arg_peri
+    cdef double m1, m2, parallax, long_an, ecc, p, inc, arg_peri, tc
     cdef double sqrte_sinomega, sqrte_cosomega
     cdef double  a_tot, top, arg_peri_di, arg_peri_rv
+    cdef double ta_temp, half_ea, m_t_tc, delta_t
     
     cdef extern from "math.h":
         double sin(double _x)
-        double atan2(double _x)
+        double cos(double _x)
+        double atan2(double _x, double _y)
         double sqrt(double _x)
         double pow(double _x, double _y)
-        
+    #set tc  as zeros for now, they get corrected later in this function
+    tc = 0.0
     ## push pars in array into meaningful variables.
     ########### special conversions for specialty parametrizations ############
     ## Convert sqrt(e)sin(omega)&sqrt(e)cos(omega) => e and omega if required.
+    ecc, arg_peri = pars[4], pars[8]
     if low_ecc:
         sqrte_sinomega, sqrte_cosomega = pars[4],pars[8]
         if 0.0 not in [sqrte_sinomega, sqrte_cosomega]:
             ecc = sqrte_sinomega**2  +  sqrte_cosomega**2
-            arg_peri = (180.0/const.pi)*atan2(sqrte_sinomega, sqrte_cosomega)
-    else:
-        ecc, arg_peri = pars[4], pars[8]
+            arg_peri = (180.0/const.pi)*atan2(sqrte_sinomega, sqrte_cosomega)        
     ###########################################################################
     [m1, m2, parallax, long_an] = pars[0:4]
     [to, p, inc] = pars[5:8]
@@ -181,6 +190,7 @@ def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to,
     arg_peri_rv = arg_peri + omega_offset_rv
     
     ## Calculate a_tot and a_tot_au
+    a_tot = 0.0
     if m1!=0:
         top = p*p*pow(const.sec_per_year,2.0)*const.Grav*const.kg_per_msun*(m1+m2)
         a_tot =pow( top/(4.0*const.pi*const.pi) , (1.0/3.0))
@@ -189,7 +199,7 @@ def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to,
     ## set K, Tc/To to defaults, then check if they need to be calculated
     #  properly for use in the RV model.
     k = 0.0
-    if varytc:
+    if vary_tc:
         tc = to
     else:
         to = tc
@@ -198,8 +208,8 @@ def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to,
         #  NOTE: both of the below versions produce identical values of K.
         #        Using 'semi-major version' by default for simplicity/speed.
         # semi-major axis version
-        top =  2.0*const.pi * (a_tot/(1.0+(m1/m2))) * sin(inc*(const.pi/180.0) 
-        k =  top / (p*const.sec_per_year*sqrt(1.0-ecc*ecc)
+        top =  2.0*const.pi * (a_tot/(1.0+(m1/m2))) * sin(inc*(const.pi/180.0)) 
+        k =  top / (p*const.sec_per_year*sqrt(1.0-ecc*ecc))
         # masses version
         #cdef double part1, part2, part3
         #part1 = pow( (2.0*const.pi*const.Grav)/(p*const.sec_per_year) , (1.0/3.0) )
@@ -209,9 +219,9 @@ def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to,
         
         ## Calculate Tc <-> T if needed.  Note, only relevant to RV data.
         if tc_equal_to==False:
-            cdef double ta_temp, half_ea, m_t_tc, delta_t
+            
             ta_temp = (const.pi/2.0)-arg_peri_rv*(const.pi/180.0)
-            half_ea = atan2( sqrt(1.0-ecc)*sin(ta_temp/2.0) , sqrt(1.0+ecc)*cos(ta/2.0) )
+            half_ea = atan2( sqrt(1.0-ecc)*sin(ta_temp/2.0) , sqrt(1.0+ecc)*cos(ta_temp/2.0) )
             m_t_tc = 2.0*half_ea-ecc*sin(2.0*half_ea);
             delta_t = (m_t_tc*p*const.days_per_year)/(2.0*const.pi);
             if vary_tc:
@@ -222,11 +232,10 @@ def model_input_pars(double [:] pars, bool low_ecc, bool tc_equal_to,
             else:
                 tc = to + delta_t
     ## push all calculated values into full list
-    model_in_pars[0:9] = [m1, m2, parallax, long_an, ecc, to, tc, p, inc]
-    model_in_pars[9:14] = [arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k]
+    model_in_pars[0:9] = m1, m2, parallax, long_an, ecc, to, tc, p, inc
+    model_in_pars[9:14] = arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k
     
-
-def orbit(double [:] model_in_pars, double [:] offsets, bool pasa,
+def orbit(double [:] model_in_pars, double [:] offsets, bint pasa,
           double [:] epochs_di, double [:] epochs_rv, int [:] rv_inst_num,
           double [:] rapa_model, double [:] decsa_model, double [:] rv_model):
     """
@@ -246,15 +255,14 @@ def orbit(double [:] model_in_pars, double [:] offsets, bool pasa,
     [arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k] = model_in_pars[9:14]
     
     ## run through each epoch and calc predicted x,y,rv as requested
-    for epoch in epochs:
-        if npts_rv>0:       
-            ## calc predicted rv if necessary
-            orbit_rv(epochs_rv, p, tc, to, ecc, offsets, rv_inst_num, k,
-                      arg_peri_rv, rv_model)
-                
-        if npts_di>0:
-            ## calc predicted DI if necessary
-            orbit_di(epochs_di, p, ecc, to, tc, arg_peri_di, long_an, 
-                     a_tot_au, parallax, rapa_model, decsa_model, pasa)
+    if npts_rv>0:       
+        ## calc predicted rv if necessary
+        orbit_rv(epochs_rv, ecc, to, tc, p, inc, arg_peri_rv, k, offsets, 
+                  rv_inst_num,rv_model)
+            
+    if npts_di>0:
+        ## calc predicted DI if necessary
+        orbit_di(epochs_di, long_an, ecc, to, tc, p, inc, arg_peri_di, 
+                 a_tot_au, parallax, rapa_model, decsa_model, pasa)
 
 #EOF

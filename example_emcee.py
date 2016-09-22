@@ -39,15 +39,17 @@ def main():
     ## define a set of starting parameters
     # The user can use any reasonable guess here.  For this example, 
     # we will use previously determined best-fit values for simplicity. 
-    start_params = [1.00580433581,0.000989368473617,49.2248464085,101.526288438,0.0654089809493,2450678.50145,11.9537449022,43.8878838314,0.208918200633,5.23954778104,46.837839368,8.9044445724,-0.00666695395887] 
-    #### Need to convert the ecc and arg_peri to low_ecc values!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
+    start_params = [1.00580433581,0.000989368473617,49.2248464085,101.526288438,0.00093254838311645019,2450678.50145,11.9537449022,43.8878838314,0.25575009541115162,-0.00666695395887]
     
-    ncpu = multiprocessing.cpu_count()
+    ncpu = multiprocessing.cpu_count()-1
     ndim = len(sd['range_maxs']) # number of parameters in the model 
     nwalkers = 50 # number of MCMC walkers 
     nburn = 1000 # "burn-in" to stabilize chains 
     nsteps = 20000 # number of MCMC steps to take 
-    starting_guesses = np.random.rand(nwalkers, ndim)  ### need to get start_params in here!!!!!!!!!!!!
+    starting_guesses = []
+    for i in range(nwalkers):
+        starting_guesses.append(start_params)
     
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, 
                                     args=[Model, Data, Params, Priors], threads=ncpu)
@@ -58,37 +60,41 @@ def main():
     trace = sampler.chain[:, nburn:, :] 
     trace = trace.reshape(-1, ndim)
     
-    ####### modify below to work for my larger example by only considering a sampling of my parameters, say m2 period and inc. !!!!!!!!!!!!!!!!!!!!!!!!!
-    
     ## Show walkers during burn-in (NOTE: by starting at the best-fit, this will look the same as post-burn-in)
-    labels = ['intercept', 'slope', 'sigma']
+    labels = ['m2', 'period', 'inclination']
     fig = plt.figure(figsize=(10,5))
     for i, chain in enumerate(sampler.chain[:, :nburn, :].T):
-        plt.subplot(3, 1, i+1)
-        plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-        plt.ylabel(labels[i])
-        
+        if i in [1,6,7]:
+            plt.subplot(3, 1, i+1)
+            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+            plt.ylabel(labels[i])
+    plt.show()
+    
     ## Show walkers after burn-in
     fig = plt.figure(figsize=(10,5))
     for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
-        plt.subplot(3, 1, i+1)
-        plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-        plt.ylabel(labels[i])
+        if i in [1,6,7]:
+            plt.subplot(3, 1, i+1)
+            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+            plt.ylabel(labels[i])
+    plt.show()
         
     ## inspect posteriors
     fig = plt.figure(figsize=(12,3))
     for i in range(ndim):
-        plt.subplot(1,3,i+1)
-        plt.hist(trace[:,i], 100, color="k", histtype="step")
-        yl = plt.ylim()
-        plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
-        plt.title("{}".format(labels[i]))
-        plt.legend()
-
+        if i in [1,6,7]:
+            plt.subplot(1,3,i+1)
+            plt.hist(trace[:,i], 100, color="k", histtype="step")
+            yl = plt.ylim()
+            plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
+            plt.title("{}".format(labels[i]))
+            plt.legend()
+    plt.show()
+    
     ## make a corner plot
     import corner
     fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
-    
+    plt.show()
 
 if __name__ == '__main__':
     main()

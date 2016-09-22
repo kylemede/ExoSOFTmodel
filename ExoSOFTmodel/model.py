@@ -94,7 +94,7 @@ class ExoSOFTparams(object):
         of those used ans inputs to during model calculations.
         """        
         cytools.model_input_pars(self.direct_pars, self.low_ecc, self.tc_equal_to, 
-                   self.di_only, self.omega_offset_di, self.omega_offset_rv,
+                   self.vary_tc, self.di_only, self.omega_offset_di, self.omega_offset_rv,
                    self.offsets, self.model_in_pars)
         ## Wrap periodic params into allowed ranges.  ie. long_an and arg_peri
         m_par_ints = [3,9]
@@ -126,7 +126,7 @@ class ExoSOFTparams(object):
         """Determine if all parameters in the full list are within their 
         allowed ranges.
         Range arrays corrispond to parameters in:
-        [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
+        [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri, v1,v2,...]
         """        
         self.check_pars[0:5] = self.model_in_pars[0:5]
         if self.vary_tc:

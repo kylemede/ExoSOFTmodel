@@ -6,7 +6,7 @@ params_dict = {
 #####################################
 # Operate in low eccenctricity mode? [bool]
 # Then step through in sqrt(e)sin(omega) and sqrt(e)cos(omega) instead of e & omega directly
-'low_ecc'   : False,
+'low_ecc'   : True,
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'vary_tc' : False,
 # take the time of center transit (inferior conjunction) into account? [bool]
