@@ -143,12 +143,27 @@ def load_settings_dict(settings_filename):
     except:
         pass
     cwd = os.getenv('PWD')
+    tmp_dir = '.'
+    #tmp_dir = os.path.dirname(os.path.abspath(settings_filename))
+    tmp_settings_filename = os.path.join(tmp_dir,'__settings.py')
+    tmp_init = os.path.join(tmp_dir,"__init__.py")
+    kill_init = False
+    if os.path.exists(tmp_init)==False:
+        kill_init = True
+        f = open(tmp_init,'w')
+        f.close()
+        
     # Copy settings file to temp dir
-    shutil.copy(settings_filename,'temp/settings.py')
+    shutil.copy(settings_filename,tmp_settings_filename)
     # cd into temp dir, import settings then cd back to pwd
-    os.chdir('.ExoSOFTmodel/temp')
-    from .settings import settings as sd
-    os.chdir(cwd)
+    if tmp_dir!='.':
+        os.chdir(tmp_dir)
+    from __settings import settings as sd
+    if kill_init:
+        os.remove(tmp_init)
+    os.remove(tmp_settings_filename)
+    if tmp_dir!='.':
+        os.chdir(cwd)
     
     ## load up modified versions of dictionary elements needed by ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.
     #[m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
@@ -166,10 +181,6 @@ def load_settings_dict(settings_filename):
     sd['range_maxs'] = range_maxs
     sd['range_mins'] = range_mins
     sd['num_offsets'] = len(sd['offset_mins'])
-    
-    sd['di_only'] = True
-    if sd['data_mode'] is 'RV':
-        sd['di_only'] = False   
     
     return sd
     

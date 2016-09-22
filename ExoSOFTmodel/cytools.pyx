@@ -1,5 +1,7 @@
 import constants as const
 
+#python setup.py build_ext --inplace
+
 #List of available C funcs in math.h:
 #https://en.wikipedia.org/wiki/C_mathematical_functions
 
@@ -150,14 +152,14 @@ cdef orbit_di(double [:] epochs, double long_an, double ecc, double to,
             decsa_model[i] = dec
         
 def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,
-                     bint di_only, double omega_offset_di, double omega_offset_rv,
+                     str data_mode, double omega_offset_di, double omega_offset_rv,
                      double [:] offsets, double [:] model_in_pars):
     # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
     # model_in_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
     
     cdef double m1, m2, parallax, long_an, ecc, p, inc, arg_peri, tc
     cdef double sqrte_sinomega, sqrte_cosomega
-    cdef double  a_tot, top, arg_peri_di, arg_peri_rv
+    cdef double a_tot, top, arg_peri_di, arg_peri_rv
     cdef double ta_temp, half_ea, m_t_tc, delta_t
     
     cdef extern from "math.h":
@@ -166,8 +168,7 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
         double atan2(double _x, double _y)
         double sqrt(double _x)
         double pow(double _x, double _y)
-    #set tc  as zeros for now, they get corrected later in this function
-    tc = 0.0
+    
     ## push pars in array into meaningful variables.
     ########### special conversions for specialty parametrizations ############
     ## Convert sqrt(e)sin(omega)&sqrt(e)cos(omega) => e and omega if required.
@@ -199,11 +200,12 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
     ## set K, Tc/To to defaults, then check if they need to be calculated
     #  properly for use in the RV model.
     k = 0.0
-    if vary_tc:
-        tc = to
-    else:
-        to = tc
-    if di_only==False:
+    tc = to
+    #if vary_tc:
+    #    tc = to
+    #else:
+    #    to = tc
+    if data_mode!="DI":
         ## Calculate K
         #  NOTE: both of the below versions produce identical values of K.
         #        Using 'semi-major version' by default for simplicity/speed.
@@ -219,7 +221,6 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
         
         ## Calculate Tc <-> T if needed.  Note, only relevant to RV data.
         if tc_equal_to==False:
-            
             ta_temp = (const.pi/2.0)-arg_peri_rv*(const.pi/180.0)
             half_ea = atan2( sqrt(1.0-ecc)*sin(ta_temp/2.0) , sqrt(1.0+ecc)*cos(ta_temp/2.0) )
             m_t_tc = 2.0*half_ea-ecc*sin(2.0*half_ea);
@@ -227,13 +228,38 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
             if vary_tc:
                 # If directly varying Tc, rather than To, then 
                 # value in the pars array is Tc, so exchange vars
-                tc = to
                 to = tc - delta_t
             else:
                 tc = to + delta_t
     ## push all calculated values into full list
-    model_in_pars[0:9] = m1, m2, parallax, long_an, ecc, to, tc, p, inc
-    model_in_pars[9:14] = arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k
+    #print('m1',type(m1))
+    #print('m2',type(m2))
+    #print('parallax',type(parallax))
+    #print('long_an',type(long_an))
+    #print('ecc',type(ecc))
+    #print('to',type(to))
+    #print('tc',type(tc))
+    #print('p',type(p))
+    #print('inc',type(inc))
+    #print('arg_peri',type(arg_peri))
+    #print('arg_peri_di',type(arg_peri_di))
+    #print('arg_peri_rv',type(arg_peri_rv))
+    #print('a_tot_au',type(a_tot_au))
+    #print('k',repr(type(k))+" =  "+str(k))
+    
+    #for i in range(13):
+    #    print(i,' '+repr(model_in_pars[i]))
+    #model_in_pars[0:9] = m1, m2, parallax, long_an, ecc, to, tc, p, inc
+    #model_in_pars[9:14] = arg_peri, arg_peri_di, arg_peri_rv, a_tot_au, k
+    #### Below is a hacky way to do it, but I kept getting the error  ###$$$$$$$$$$$$
+    #### due to indexing being wrong.  Fix this !!! #$$$$$
+    model_in_pars[0],model_in_pars[1],model_in_pars[2] = m1, m2, parallax 
+    model_in_pars[3],model_in_pars[4],model_in_pars[5] = long_an, ecc, to
+    model_in_pars[6],model_in_pars[7],model_in_pars[8] = tc, p, inc
+    model_in_pars[9],model_in_pars[10] = arg_peri, arg_peri_di
+    model_in_pars[11],model_in_pars[12],model_in_pars[13] = arg_peri_rv, a_tot_au, k
+    #for i in range(model_in_pars.shape[0]):
+    #    print(i,' '+repr(model_in_pars[i]))
     
 def orbit(double [:] model_in_pars, double [:] offsets, bint pasa, str data_model,
           double [:] epochs_di, double [:] epochs_rv, int [:] rv_inst_num,

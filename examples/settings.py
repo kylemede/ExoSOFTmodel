@@ -36,14 +36,12 @@ params_dict = {
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'para_min' : 1.0,
 'para_max' : 100.0,
-# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg] OR None
-# Default: [0,360] if 'dataMode' is '3D', else [0,180].
-'long_an_min' : None,
-'long_an_max' : None,
-# Minimum/Maximum allowed value for the Eccentricity [double] OR None
-# Default: [0,0.98]
-'ecc_min' : None,
-'ecc_max' : None,
+# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
+'long_an_min' : 0.0,
+'long_an_max' : 360.0,
+# Minimum/Maximum allowed value for the Eccentricity [double]
+'ecc_min' : 0.0,
+'ecc_max' : 0.98,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD] OR None
 # Default: [earliestsEpoch-period,earliestEpoch]
 't_min' : 2449000,
@@ -54,7 +52,7 @@ params_dict = {
 # Minimum/Maximum allowed value for the Inclination [double][deg] OR None
 # Default: [0,180].  [0,90] is another popular choice.
 'inc_min' : 1,
-'inc_min' : 90,
+'inc_max' : 90,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg] OR None
 # Default: [0,360]
 'arg_peri_min' : -50,

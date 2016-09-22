@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 import numpy as np
-import cytools
+from .cytools import orbit, model_input_pars
 import KMlogger
 from six.moves import range
 
@@ -81,7 +81,7 @@ class ExoSOFTparams(object):
         self.num_offsets = num_offsets
         self.direct_pars = np.zeros((9+num_offsets),dtype=np.dtype('d'))
         # model_in_params: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
-        self.model_in_pars = np.zeros((13),dtype=np.dtype('d'))
+        self.model_in_pars = np.zeros((14),dtype=np.dtype('d'))
         # stored_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,a_tot_au,chi_sqr,K,v1,v2...]
         self.stored_pars = np.zeros((12+num_offsets),dtype=np.dtype('d'))
         self.offsets = np.zeros((num_offsets),dtype=np.dtype('d'))
@@ -93,20 +93,20 @@ class ExoSOFTparams(object):
         Convert directly varied parameters into a comprehensive list
         of those used ans inputs to during model calculations.
         """        
-        cytools.model_input_pars(self.direct_pars, self.low_ecc, self.tc_equal_to, 
+        model_input_pars(self.direct_pars, self.low_ecc, self.tc_equal_to, 
                    self.vary_tc, self.di_only, self.omega_offset_di, self.omega_offset_rv,
                    self.offsets, self.model_in_pars)
         ## Wrap periodic params into allowed ranges.  ie. long_an and arg_peri
         m_par_ints = [3,9]
         min_max_ints = [3,8]
         for i in [0,1]:
-            if self.mins[min_max_ints[i]] > self.model_input_pars[m_par_ints[i]]:
+            if self.mins[min_max_ints[i]] > self.model_in_pars[m_par_ints[i]]:
                 #print('par was '+str(model_input_pars[m_par_ints[i]]))
-                self.model_input_pars[m_par_ints[i]]+=360.0
+                self.model_in_pars[m_par_ints[i]]+=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
-            elif self.model_input_pars[m_par_ints[i]] > self.maxs[min_max_ints[i]]:
+            elif self.model_in_pars[m_par_ints[i]] > self.maxs[min_max_ints[i]]:
                 #print('par was '+str(model_input_pars[m_par_ints[i]]))
-                self.model_input_pars[m_par_ints[i]]-=360.0
+                self.model_in_pars[m_par_ints[i]]-=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
         
     def make_stored(self,chi_squared):
@@ -207,7 +207,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
     in_range = Params.check_range()
     if in_range:         
         ## Call Cython func to calculate orbit. ie. -> predicted x,y,rv values.
-        cytools.orbit(Params.model_in_pars, Params.offsets, Data.pasa, 
+        orbit(Params.model_in_pars, Params.offsets, Data.pasa, 
                       Data.data_mode, Data.epochs_di, Data.epochs_rv, 
                       Data.rv_inst_num, Data.rapa_model, Data.decsa_model, 
                       Data.rv_model)
@@ -222,8 +222,13 @@ def ln_posterior(pars, Model, Data, Params, Priors):
             chi_sqr_rapa = np.sum((Data.rapa-Data.rapa_model)**2 / Data.rapa_err**2)
             chi_sqr_decsa = np.sum((Data.decsa-Data.decsa_model)**2 / Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa
+        #print('chi_sqr_rv',chi_sqr_rv)
+        #print('chi_sqr_rapa',chi_sqr_rapa)
+        #print('chi_sqr_decsa',chi_sqr_decsa)
+        #print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
+        #print('ln_lik',ln_lik)
         ## Make version of params with chi_sqr_3d for storing during ExoSOFT
         Params.make_stored(chi_sqr_3d)
         ## store the chi sqr values in model object for printing in ExoSOFT.
@@ -234,7 +239,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         ## Calculate priors
         prior = Priors.priors(Params.model_in_pars)
         Model.prior = prior
-        
+        #print('np.log(prior)',np.log(prior))
         ## calculate lnpost
         ln_post = np.log(prior) + ln_lik
         

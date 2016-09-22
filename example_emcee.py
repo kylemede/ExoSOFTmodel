@@ -9,14 +9,14 @@ from six.moves import range
 
 def main():
     ## load up default settings dictionary
-    sd = ExoSOFTmodel.load_settings_dict('.examples/settings.py')
+    sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
     
     ## instantiate main objects/classes: ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.  And minor class, ExoSOFTmodel
     Model = ExoSOFTmodel.ExoSOFTmodel()  ###$$$$$$$$$ Kill this by merging into another one? OR merging priors into here?
     
     Params = ExoSOFTmodel.ExoSOFTparams(sd['omega_offset_di'], 
              sd['omega_offset_rv'], sd['vary_tc'], sd['tc_equal_to'], 
-             sd['di_only'], sd['low_ecc'], sd['range_maxs'], sd['range_mins'], 
+             sd['data_mode'], sd['low_ecc'], sd['range_maxs'], sd['range_mins'], 
              sd['num_offsets'])
     
     (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
@@ -46,11 +46,12 @@ def main():
     ncpu = multiprocessing.cpu_count()-1
     ndim = len(sd['range_maxs']) # number of parameters in the model 
     nwalkers = 50 # number of MCMC walkers 
-    nburn = 1000 # "burn-in" to stabilize chains 
-    nsteps = 20000 # number of MCMC steps to take 
+    nburn = 10 # "burn-in" to stabilize chains 
+    nsteps = 2000 # number of MCMC steps to take 
     starting_guesses = []
     for i in range(nwalkers):
         starting_guesses.append(start_params)
+    starting_guesses = np.array(starting_guesses,dtype=np.dtype('d'))
     
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, 
                                     args=[Model, Data, Params, Priors], threads=ncpu)
@@ -64,38 +65,44 @@ def main():
     ## Show walkers during burn-in (NOTE: by starting at the best-fit, this will look the same as post-burn-in)
     labels = ['m2', 'period', 'inclination']
     fig = plt.figure(figsize=(10,5))
-    for i, chain in enumerate(sampler.chain[:, :nburn, :].T):
+    j=0
+    for i, chain in enumerate(sampler.chain[:, :nburn, :].T): 
         if i in [1,6,7]:
-            plt.subplot(3, 1, i+1)
+            plt.subplot(3, 1, j+1)
             plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            plt.ylabel(labels[i])
+            plt.ylabel(labels[j])
+            j+=1
     plt.show()
     
     ## Show walkers after burn-in
     fig = plt.figure(figsize=(10,5))
+    j=0
     for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
         if i in [1,6,7]:
-            plt.subplot(3, 1, i+1)
+            plt.subplot(3, 1, j+1)
             plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            plt.ylabel(labels[i])
+            plt.ylabel(labels[j])
+            j+=1
     plt.show()
         
     ## inspect posteriors
     fig = plt.figure(figsize=(12,3))
+    j=0
     for i in range(ndim):
         if i in [1,6,7]:
-            plt.subplot(1,3,i+1)
+            plt.subplot(1,3,j+1)
             plt.hist(trace[:,i], 100, color="k", histtype="step")
             yl = plt.ylim()
             plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
-            plt.title("{}".format(labels[i]))
+            plt.title("{}".format(labels[j]))
             plt.legend()
+            j+=1
     plt.show()
     
     ## make a corner plot
-    import corner
-    fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
-    plt.show()
+    #import corner
+    #fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
+    #plt.show()
 
 if __name__ == '__main__':
     main()
