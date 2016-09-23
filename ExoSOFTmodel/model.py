@@ -43,6 +43,8 @@ class ExoSOFTmodel(object):
         self.chi_squared_di = 0
         self.chi_squared_rv = 0
         self.prior = 0
+        ## TRACK BEST CHI SQUAREDS FOUND SO FAR IN HERE?
+        ## makes more sense to change this to 'ExoSOFTresults' and name the object 'Results'??!!
         
         ## prior functions??
     
@@ -205,7 +207,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
     Params.make_model_in()
         
     ## Range check on proposed params, set ln_post=zero if outside ranges.
-    ln_post = 0.0
+    ln_post = -np.inf
     in_range = Params.check_range()
     if in_range:         
         ## Call Cython func to calculate orbit. ie. -> predicted x,y,rv values.
