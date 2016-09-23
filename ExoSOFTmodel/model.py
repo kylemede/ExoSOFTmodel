@@ -108,6 +108,7 @@ class ExoSOFTparams(object):
                 #print('par was '+str(model_input_pars[m_par_ints[i]]))
                 self.model_in_pars[m_par_ints[i]]-=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
+        print(repr(self.model_in_pars))
         
     def make_stored(self,chi_squared):
         """ 
@@ -225,7 +226,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         #print('chi_sqr_rv',chi_sqr_rv)
         #print('chi_sqr_rapa',chi_sqr_rapa)
         #print('chi_sqr_decsa',chi_sqr_decsa)
-        #print('chi_sqr_3d',chi_sqr_3d)
+        print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
         #print('ln_lik',ln_lik)

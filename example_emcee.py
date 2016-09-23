@@ -41,7 +41,10 @@ def main():
     # The user can use any reasonable guess here.  For this example, 
     # we will use previously determined best-fit values for simplicity. 
     # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
-    start_params = [1.00580433581,0.000989368473617,49.2248464085,101.526288438,0.00093254838311645019,2450678.50145,11.9537449022,43.8878838314,0.25575009541115162,-0.00666695395887]
+    m2 = ExoSOFTmodel.kg_per_mjup/ExoSOFTmodel.kg_per_msun
+    sqrte_sinomega = np.sqrt(0.048)*np.sin((np.pi/180.0)*14.8)
+    sqrte_cosomega = np.sqrt(0.048)*np.cos((np.pi/180.0)*14.8)
+    start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0]
     
     ncpu = multiprocessing.cpu_count()-1
     ndim = len(sd['range_maxs']) # number of parameters in the model 
