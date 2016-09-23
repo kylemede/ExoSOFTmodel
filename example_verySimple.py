@@ -47,6 +47,9 @@ def main():
     start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0]
     start_params = np.array(start_params,dtype=np.dtype('d'))
     ln_post = ExoSOFTmodel.ln_posterior(start_params, Model, Data, Params, Priors)
+    print('chi_squared_3d ',Model.chi_squared_3d)
+    print('reduced chi_squared_3d ',(Model.chi_squared_3d/35.9))
+    print('prior ',Model.prior)
     print('ln_post ',ln_post)
     
     """

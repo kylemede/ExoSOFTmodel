@@ -183,7 +183,8 @@ class ExoSOFTpriors(object):
     def para_prior_fn(self, para):
         ret = 1.0
         if para!=0.0:
-            ret = 1.0/(para**4.0)
+            ## this needs parallax in arc sec, but standard in ExoSOFT is mas, so /1000
+            ret = 1.0/((para/100.0)**4.0)
             #print('para 1/**4 ',1.0/(para**4.0))
             if self.para_est!=self.para_err!=0:
                 ## a Gaussian prior centered on hipparcos and width of 
