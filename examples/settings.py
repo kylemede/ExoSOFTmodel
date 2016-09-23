@@ -13,6 +13,12 @@ params_dict = {
 'tc_equal_to' : True,
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 # NOTE: Internally, 180deg is already added to arg_peri_rv.
+# This is required as the RV values are for the primary and thus omega+pi
+# compared to the value used for the secondary in the DI data.
+## Another way to think of this is:
+## arg_peri_di = arg_peri_companion = arg_peri
+## arg_peri_rv = arg_peri_primary   = arg_peri +180
+####$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  MAYBE KILL BOTH omega_offset_rv AND omega_offset_di !?!?!
 'omega_offset_rv' : 0.0,
 ##################################################
 ## Special settings DI model:

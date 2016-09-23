@@ -213,10 +213,9 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
     # Get the model version of each omega.
     # This is required as the RV values are for the primary and thus omega+pi
     # compared to the value used for the secondary in the DI data.
+    ## Another way to think of this is arg_peri_di = arg_peri_companion
+    ##                                 arg_peri_rv = arg_peri_primary
     arg_peri_di = arg_peri + omega_offset_di
-    ## ExoSOFT/ExoSOFTmodel assumes the RV data was measured from the primary's 
-    ## spectra, and the orbit of the companion is being fit, NOT the orbit of
-    ## the primary.  Thus, there is a 180deg shift forced to account for this.
     arg_peri_rv = arg_peri + omega_offset_rv +180.0
     
     ## Calculate a_tot and a_tot_au

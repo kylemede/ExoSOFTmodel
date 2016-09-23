@@ -50,7 +50,7 @@ def main():
     ndim = len(sd['range_maxs']) # number of parameters in the model 
     nwalkers = 50 # number of MCMC walkers 
     nburn = 10 # "burn-in" to stabilize chains 
-    nsteps = 2000 # number of MCMC steps to take 
+    nsteps = 200 # number of MCMC steps to take 
     starting_guesses = []
     for i in range(nwalkers):
         starting_guesses.append(start_params)

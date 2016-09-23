@@ -214,8 +214,8 @@ def ln_posterior(pars, Model, Data, Params, Priors):
                       Data.rv_inst_num, Data.rapa_model, Data.decsa_model, 
                       Data.rv_model,Params.taea)
                 
-        print('measured rv ',repr(Data.rv))
-        print('model rv ',repr(Data.rv_model))
+        #print('measured rv ',repr(Data.rv))
+        #print('model rv ',repr(Data.rv_model))
         ## Calculate chi squareds and then the 3d log likelihood
         #  NOTE: The log(2*pi*sigma**2) term is not included here as the 
         #        likelihood is always used as a likelihood ratio.
@@ -226,13 +226,13 @@ def ln_posterior(pars, Model, Data, Params, Priors):
             chi_sqr_rapa = np.sum((Data.rapa-Data.rapa_model)**2 / Data.rapa_err**2)
             chi_sqr_decsa = np.sum((Data.decsa-Data.decsa_model)**2 / Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa
-        print('chi_sqr_rv',chi_sqr_rv)
-        print('chi_sqr_rapa',chi_sqr_rapa)
-        print('chi_sqr_decsa',chi_sqr_decsa)
-        print('chi_sqr_3d',chi_sqr_3d)
+        #print('chi_sqr_rv',chi_sqr_rv)
+        #print('chi_sqr_rapa',chi_sqr_rapa)
+        #print('chi_sqr_decsa',chi_sqr_decsa)
+        #print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
-        #print('ln_lik',ln_lik)
+        print('ln_lik',ln_lik)
         ## Make version of params with chi_sqr_3d for storing during ExoSOFT
         Params.make_stored(chi_sqr_3d)
         ## store the chi sqr values in model object for printing in ExoSOFT.
@@ -243,7 +243,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         ## Calculate priors
         prior = Priors.priors(Params.model_in_pars)
         Model.prior = prior
-        #print('np.log(prior)',np.log(prior))
+        print('np.log(prior)',np.log(prior))
         ## calculate lnpost
         ln_post = np.log(prior) + ln_lik
         
