@@ -232,7 +232,7 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         #print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
-        print('ln_lik',ln_lik)
+        #print('ln_lik',ln_lik)
         ## Make version of params with chi_sqr_3d for storing during ExoSOFT
         Params.make_stored(chi_sqr_3d)
         ## store the chi sqr values in model object for printing in ExoSOFT.
@@ -243,9 +243,11 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         ## Calculate priors
         prior = Priors.priors(Params.model_in_pars)
         Model.prior = prior
-        print('np.log(prior)',np.log(prior))
+        #print('np.log(prior)',np.log(prior))
+        #print('prior ',prior)
         ## calculate lnpost
         ln_post = np.log(prior) + ln_lik
+        #print('ln_post ',ln_post)
         
     return ln_post
 

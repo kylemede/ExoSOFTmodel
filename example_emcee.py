@@ -50,12 +50,14 @@ def main():
     ndim = len(sd['range_maxs']) # number of parameters in the model 
     nwalkers = 50 # number of MCMC walkers 
     nburn = 10 # "burn-in" to stabilize chains 
-    nsteps = 200 # number of MCMC steps to take 
+    nsteps = 20 # number of MCMC steps to take 
     starting_guesses = []
     for i in range(nwalkers):
         starting_guesses.append(start_params)
     starting_guesses = np.array(starting_guesses,dtype=np.dtype('d'))
     
+    
+    ## Call emcee to explore the parameter space
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, 
                                     args=[Model, Data, Params, Priors], threads=ncpu)
     sampler.run_mcmc(starting_guesses, nsteps)
@@ -64,6 +66,8 @@ def main():
     # discard burn-in points and reshape
     trace = sampler.chain[:, nburn:, :] 
     trace = trace.reshape(-1, ndim)
+    
+    #print(np.percentile(trace,nwalkers,axis=0))
     
     ## Show walkers during burn-in (NOTE: by starting at the best-fit, this will look the same as post-burn-in)
     labels = ['m2', 'period', 'inclination']
@@ -84,6 +88,10 @@ def main():
         if i in [1,6,7]:
             plt.subplot(3, 1, j+1)
             plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+            print('mean ',np.mean(chain))
+            print('median ',np.mean(chain))
+            print('variance ',np.var(chain))
+            #print('chain ',repr(chain))
             plt.ylabel(labels[j])
             j+=1
     plt.show()
