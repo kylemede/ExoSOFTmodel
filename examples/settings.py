@@ -12,6 +12,7 @@ params_dict = {
 # take the time of center transit (inferior conjunction) into account? [bool]
 'tc_equal_to' : True,
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+# NOTE: Internally, 180deg is already added to arg_peri_rv.
 'omega_offset_rv' : 0.0,
 ##################################################
 ## Special settings DI model:

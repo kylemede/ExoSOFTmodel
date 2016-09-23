@@ -6,7 +6,7 @@ import constants as const
 #https://en.wikipedia.org/wiki/C_mathematical_functions
 
 cdef anomalies(double p, double tc, double to, double ecc, 
-               double epoch, double ea, double ta):
+               double epoch, double [:] taea):
     """ 
     Calculate the True and Eccentric Anomalies.
     Remember that in RV, there is occasionally a phase shift due to 
@@ -15,7 +15,7 @@ cdef anomalies(double p, double tc, double to, double ecc,
     
     TA and EA (ta,ea) are calculated in radians.
     """
-    cdef double ma, multiples, e_prime
+    cdef double ma, multiples, e_prime, ta, ea
     cdef int newton_count
     cdef bint warnings_on
     
@@ -32,9 +32,13 @@ cdef anomalies(double p, double tc, double to, double ecc,
         
     ## Calc Mean Anomaly
     ma = (2.0*const.pi*(epoch-2.0*to+tc))/(p*const.days_per_year)
+    #print('ma ',ma)
     #Find if over one full orbit and shift into [-2pi,2pi]
-    multiples = floor(ma/2.0*const.pi)
+    #print("ma/2.0*const.pi ", repr(ma/(2.0*const.pi)))
+    multiples = floor(ma/(2.0*const.pi))
+    #print('multiples ',multiples)
     ma -= multiples*2.0*const.pi
+    #print('ma ',ma)
     # shift into [0,2pi]
     if ma<0:
         ma += 2.0*const.pi
@@ -43,8 +47,10 @@ cdef anomalies(double p, double tc, double to, double ecc,
     
     ## if not circular, calculate their specific values
     if ecc>0:
+        #print('ecc ',ecc)
         # double check M is not zero or 2pi
         if ma not in [0.0,2.0*const.pi]:
+            #print("starting newton")
             ea_prime = ma + ecc*sin(ma) + ((ecc**2.0)/2.0*ma)*sin(2.0*ma)
             newton_count = 0
             while (fabs(ea-ea_prime)>1e-10) and (newton_count<50):
@@ -63,44 +69,62 @@ cdef anomalies(double p, double tc, double to, double ecc,
                         print "P = "+str(p)
                         print "Eprime = "+str(ea_prime)
                         print "NewtonCount = "+str(newton_count)
+            #print('newton_count ',newton_count)
             # calculate TA from E
-            ta = acos((cos(ea)-ecc)/(1.0-ecc*cos(ea)))
+            ta = acos( (cos(ea)-ecc)/(1.0-ecc*cos(ea)) )
+            #print('before sign reversal ta ',ta)
+            #print('ea ',ea)
             # both increase properly 0->180, but as E properly continues to 
             # increase from 180->360, TA decreases.  So correcting for that here.
             if ea>const.pi:
-                ta = 2.0*const.pi - ta
-
+                #print('reversing ta sign')
+                ta = (2.0*const.pi) - ta
+    #print('last in anomalies ta ',ta)
+    #print('last in anomalies ea ',ea)
+    #print ''
+    taea[0],taea[1] = ta, ea
+                
 cdef orbit_rv(double [:] epochs, double ecc, double to, double tc, double p, 
               double inc, double arg_peri_rv, double k, double [:] offsets,
-               int [:] rv_inst_num, double [:] rv_model):
+               int [:] rv_inst_num, double [:] rv_model, double [:] taea):
     """ 
     Calculates the predicted rv for a each epoch in epochs array.
      
     model value = calculated rv + the instrument specific offset
     """
-    cdef double top, ea, ta, ta_temp, half_ea, m_t_tc, delta_t, rv, arg_peri_rad
+    cdef double top, ea, ta, rv, arg_peri_rad
     cdef int npts
     cdef extern from "math.h":
         double cos(double _x)
         
     #set ea,ta as zeros for now, they get corrected in anomalies function.
-    ea, ta = 0.0, 0.0
     npts = epochs.shape[0]
     arg_peri_rad = arg_peri_rv*(const.pi/180.0)
     
+    #print('taea ',repr(taea))
+    
     ## calculate rv for each epoch in the data
     for i in range(npts):
-        ## Call anomalies        
-        anomalies(p, tc, to, ecc, epochs[i], ea, ta)
+        ## Call anomalies     
+        #print('before anomalies')   
+        anomalies(p, tc, to, ecc, epochs[i], taea)
+        #print('back from anomalies')
+        #print('taea[0] ',repr(taea[0]))
+        #print('taea[1] ',repr(taea[1]))
+        ta, ea = taea[0], taea[1]
+        #print('inside orb rv ta ',ta)
+        #print('inside orb rv ea ',ea)
         ## Calc predicted RV + the instrument specific offset
         rv = k*( cos(ta+arg_peri_rad) + ecc*cos(arg_peri_rad) )
+        #print('inside orb rv ta rv ',rv)
+        #print ''
         rv_model[i] = rv + offsets[rv_inst_num[i]]
         
          
 cdef orbit_di(double [:] epochs, double long_an, double ecc, double to, 
               double tc, double p, double inc, double arg_peri_di,
               double a_tot_au, double parallax, double [:] rapa_model,
-              double [:] decsa_model, bint pasa):                 
+              double [:] decsa_model, bint pasa, double [:] taea):                 
     """
     Calculates the predited x/RA/PA and y/Dec/SA for a single epoch.
     """
@@ -114,7 +138,6 @@ cdef orbit_di(double [:] epochs, double long_an, double ecc, double to,
         double atan2(double _x,double _y)
         
     #set ea,ta as zeros for now, they get corrected in anomalies function.
-    ea, ta = 0.0, 0.0
     npts = epochs.shape[0]
     long_an_rad = long_an*(const.pi/180.0)
     arg_peri_rad = arg_peri_di*(const.pi/180.0)
@@ -124,7 +147,10 @@ cdef orbit_di(double [:] epochs, double long_an, double ecc, double to,
     ## Calculate predicted x/RA/PA and y/Dec/SA values for each epoch in the data
     for i in range(npts):
         ## Call anomalies        
-        anomalies(p, tc, to, ecc, epochs[i], ea, ta)
+        anomalies(p, tc, to, ecc, epochs[i], taea)
+        ta, ea = taea[0], taea[1]
+        #print('inside orb di ta ',ta)
+        #print('inside orb di ea ',ea)
         ## Use Thiele-Innes Method to calculate predicted x/RA/PA and y/Dec/SA
         a_thi = sep_arcsec * ( cos(long_an_rad)*cos(arg_peri_rad) - sin(long_an_rad)*sin(arg_peri_rad)*cos(inc_rad))
         b_thi = sep_arcsec * ( sin(long_an_rad)*cos(arg_peri_rad) + cos(long_an_rad)*sin(arg_peri_rad)*cos(inc_rad))
@@ -266,7 +292,7 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
     
 def orbit(double [:] model_in_pars, double [:] offsets, bint pasa, str data_model,
           double [:] epochs_di, double [:] epochs_rv, int [:] rv_inst_num,
-          double [:] rapa_model, double [:] decsa_model, double [:] rv_model):
+          double [:] rapa_model, double [:] decsa_model, double [:] rv_model, double [:] taea):
     """
     The version of orbit that is called from Python.
     Pass in the parameters and output data array to have loaded up in place.
@@ -287,11 +313,11 @@ def orbit(double [:] model_in_pars, double [:] offsets, bint pasa, str data_mode
     if (npts_rv>0) and (data_model!='DI'):       
         ## calc predicted rv if necessary
         orbit_rv(epochs_rv, ecc, to, tc, p, inc, arg_peri_rv, k, offsets, 
-                  rv_inst_num,rv_model)
+                  rv_inst_num,rv_model, taea)
             
     if (npts_di>0) and (data_model!='RV'):
         ## calc predicted DI if necessary
         orbit_di(epochs_di, long_an, ecc, to, tc, p, inc, arg_peri_di, 
-                 a_tot_au, parallax, rapa_model, decsa_model, pasa)
+                 a_tot_au, parallax, rapa_model, decsa_model, pasa, taea)
 
 #EOF

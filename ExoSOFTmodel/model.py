@@ -87,6 +87,7 @@ class ExoSOFTparams(object):
         self.offsets = np.zeros((num_offsets),dtype=np.dtype('d'))
         #check_pars: [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
         self.check_pars = np.zeros((9+num_offsets),dtype=np.dtype('d'))
+        self.taea = np.zeros((2),dtype=np.dtype('d'))
         
     def make_model_in(self):
         """
@@ -108,7 +109,7 @@ class ExoSOFTparams(object):
                 #print('par was '+str(model_input_pars[m_par_ints[i]]))
                 self.model_in_pars[m_par_ints[i]]-=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
-        print(repr(self.model_in_pars))
+        #print(repr(self.model_in_pars))
         
     def make_stored(self,chi_squared):
         """ 
@@ -211,8 +212,10 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         orbit(Params.model_in_pars, Params.offsets, Data.pasa, 
                       Data.data_mode, Data.epochs_di, Data.epochs_rv, 
                       Data.rv_inst_num, Data.rapa_model, Data.decsa_model, 
-                      Data.rv_model)
+                      Data.rv_model,Params.taea)
                 
+        print('measured rv ',repr(Data.rv))
+        print('model rv ',repr(Data.rv_model))
         ## Calculate chi squareds and then the 3d log likelihood
         #  NOTE: The log(2*pi*sigma**2) term is not included here as the 
         #        likelihood is always used as a likelihood ratio.
@@ -223,9 +226,9 @@ def ln_posterior(pars, Model, Data, Params, Priors):
             chi_sqr_rapa = np.sum((Data.rapa-Data.rapa_model)**2 / Data.rapa_err**2)
             chi_sqr_decsa = np.sum((Data.decsa-Data.decsa_model)**2 / Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa
-        #print('chi_sqr_rv',chi_sqr_rv)
-        #print('chi_sqr_rapa',chi_sqr_rapa)
-        #print('chi_sqr_decsa',chi_sqr_decsa)
+        print('chi_sqr_rv',chi_sqr_rv)
+        print('chi_sqr_rapa',chi_sqr_rapa)
+        print('chi_sqr_decsa',chi_sqr_decsa)
         print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
