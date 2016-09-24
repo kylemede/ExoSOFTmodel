@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 import os
 import sys
-#import re
+import re
 
 try:
     from setuptools import setup
@@ -33,13 +33,13 @@ else:
 setup(    
     name='ExoSOFTmodel', 
     packages =['ExoSOFTmodel'],
-    version="1.0.0", 
+    version="1.0.4", 
     author='Kyle Mede',
     author_email = 'kylemede@gmail.com',
     url = 'https://github.com/kylemede/ExoSOFTmodel',
     license = ['GNU GPLv3'],
     description ='An astronomical model for calculating the predicted astrometry and radial velocity due to a companion.',
-    long_description = rd("README.md"),
+    long_description = rd("README-pypi.rst"),
     package_data={"": ["LICENSE", "AUTHORS.rst"]},
     include_package_data=True,
     keywords=['model'],
