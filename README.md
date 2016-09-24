@@ -25,6 +25,13 @@ Thus, the easiest way to install it is:
  
  $pip install ExoSOFTmodel
  
+Re-compiling Cython tools
+-------------------------
+
+Should you need to modify any of the tools within [cytools.pyx](https://github.com/kylemede/ExoSOFTmodel/blob/master/ExoSOFTmodel/cytools.pyx)
+ you need to have cython installed.  Then compile the code within its directory using:
+ 
+ $python setup.py build_ext --inplace
 
 License
 -------
