@@ -25,10 +25,11 @@ Thus, the easiest way to install it is:
  
  $pip install ExoSOFTmodel
  
- Building the documentation
- --------------------------
- The documentation source files [here](https://github.com/kylemede/ExoSOFTmodel/blob/master/documentation/)
-  can be built following the install of the required packages sphinx and sphinx_rtd_theme with
+Building the documentation
+--------------------------
+ [The documentation source files](https://github.com/kylemede/ExoSOFTmodel/blob/master/documentation/)
+  can be built following the install of the required packages sphinx and sphinx_rtd_theme with:
+  
   $pip install sphinx
   $pip install sphinx_rtd_theme
 
