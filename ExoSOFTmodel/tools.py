@@ -184,5 +184,23 @@ def load_settings_dict(settings_filename):
     
     return sd
     
-    
+def make_starting_params(pars,n,scale=0.01):
+    """
+    Creates an array of starting guesses tightly centered on the input 
+    parameters.
+    """
+    # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
+    starting_params = []
+    for i in range(n):
+        p = []
+        for j in range(len(pars)):
+            s = scale
+            if pars[j]>1e4:
+                # make scale smaller for To/Tc
+                s = scale*0.001
+            p.append( np.random.normal(pars[j],s*pars[j]) )
+        starting_params.append(p)
+    starting_params = np.array(starting_params,dtype=np.dtype('d'))
+    return starting_params
+
 #EOF

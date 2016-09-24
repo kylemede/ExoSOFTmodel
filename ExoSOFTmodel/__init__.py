@@ -15,3 +15,4 @@ from .model import ln_posterior
 from .tools import load_di_data
 from .tools import load_rv_data
 from .tools import load_settings_dict
+from .tools import make_starting_params

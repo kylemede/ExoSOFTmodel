@@ -44,18 +44,14 @@ def main():
     m2 = ExoSOFTmodel.kg_per_mjup/ExoSOFTmodel.kg_per_msun
     sqrte_sinomega = np.sqrt(0.048)*np.sin((np.pi/180.0)*14.8)
     sqrte_cosomega = np.sqrt(0.048)*np.cos((np.pi/180.0)*14.8)
-    start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0]
+    start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0.1]
     
-    ncpu = multiprocessing.cpu_count()-1
+    ncpu = multiprocessing.cpu_count()
     ndim = len(sd['range_maxs']) # number of parameters in the model 
-    nwalkers = 50 # number of MCMC walkers 
-    nburn = 10 # "burn-in" to stabilize chains 
-    nsteps = 20 # number of MCMC steps to take 
-    starting_guesses = []
-    for i in range(nwalkers):
-        starting_guesses.append(start_params)
-    starting_guesses = np.array(starting_guesses,dtype=np.dtype('d'))
-    
+    nwalkers = 200 # number of MCMC walkers 
+    nburn = 500 # "burn-in" to stabilize chains 
+    nsteps = 5000 # number of MCMC steps to take 
+    starting_guesses = ExoSOFTmodel.make_starting_params(start_params,nwalkers,scale=0.01)
     
     ## Call emcee to explore the parameter space
     sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, 
@@ -76,6 +72,8 @@ def main():
     for i, chain in enumerate(sampler.chain[:, :nburn, :].T): 
         if i in [1,6,7]:
             plt.subplot(3, 1, j+1)
+            if i==1:
+                chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
             plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
             plt.ylabel(labels[j])
             j+=1
@@ -87,6 +85,8 @@ def main():
     for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
         if i in [1,6,7]:
             plt.subplot(3, 1, j+1)
+            if i==1:
+                chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
             plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
             print('mean ',np.mean(chain))
             print('median ',np.mean(chain))
@@ -102,7 +102,10 @@ def main():
     for i in range(ndim):
         if i in [1,6,7]:
             plt.subplot(1,3,j+1)
-            plt.hist(trace[:,i], 100, color="k", histtype="step")
+            trace_use = trace[:,i]
+            if i==1:
+                trace_use*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
+            plt.hist(trace_use, 100, color="k", histtype="step")
             yl = plt.ylim()
             plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
             plt.title("{}".format(labels[j]))
