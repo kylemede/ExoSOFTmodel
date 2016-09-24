@@ -2,8 +2,8 @@ ExoSOFTmodel
 ============
 
 [![Build Status](https://travis-ci.org/kylemede/ExoSOFTmodel.svg?branch=master)](https://travis-ci.org/kylemede/ExoSOFTmodel)
-<!--[![PyPI version](https://badge.fury.io/py/KMlogger.svg)](https://badge.fury.io/py/KMlogger)-->
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://github.com/kylemede/ExoSOFTmodel/blob/master/LICENSE)
+<!--[![PyPI version](https://badge.fury.io/py/KMlogger.svg)](https://badge.fury.io/py/KMlogger)-->
 <!--[![Coverage Status](https://coveralls.io/repos/github/kylemede/KMlogger/badge.svg?branch=master)](https://coveralls.io/github/kylemede/KMlogger?branch=master)-->
 
 An astronomical model for calculating the predicted astrometry and radial velocity due to a companion.
