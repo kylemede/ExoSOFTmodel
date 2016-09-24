@@ -101,7 +101,7 @@ def main():
                     chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
                 plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
                 print('mean ',np.mean(chain))
-                print('median ',np.mean(chain))
+                print('median ',np.median(chain))
                 print('variance ',np.var(chain))
                 #print('chain ',repr(chain))
                 plt.ylabel(labels[j])
