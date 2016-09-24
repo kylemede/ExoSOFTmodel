@@ -10,7 +10,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-
+ 
+    examples <./examples.rst>
+    model <./model.rst>
+    cytools <./cytools.rst>
+    priors <./priors.rst>
+    tools <./tools.rst>
 
 
 Indices and tables
