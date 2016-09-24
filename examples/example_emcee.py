@@ -30,7 +30,7 @@ def main():
     show_corner = False
     
     ## load up default settings dictionary
-    sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
+    sd = ExoSOFTmodel.load_settings_dict('./settings.py')
     
     ## load in the RV and Astrometry (DI) data
     (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
