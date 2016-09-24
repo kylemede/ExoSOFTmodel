@@ -1,7 +1,7 @@
 ExoSOFTmodel
 ============
 
-<!--[![Build Status](https://travis-ci.org/kylemede/KMlogger.svg?branch=master)](https://travis-ci.org/kylemede/KMlogger)-->
+[![Build Status](https://travis-ci.org/kylemede/ExoSOFTmodel.svg?branch=master)](https://travis-ci.org/kylemede/ExoSOFTmodel)
 <!--[![PyPI version](https://badge.fury.io/py/KMlogger.svg)](https://badge.fury.io/py/KMlogger)-->
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://github.com/kylemede/ExoSOFTmodel/blob/master/LICENSE)
 <!--[![Coverage Status](https://coveralls.io/repos/github/kylemede/KMlogger/badge.svg?branch=master)](https://coveralls.io/github/kylemede/KMlogger?branch=master)-->
