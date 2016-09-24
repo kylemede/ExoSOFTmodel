@@ -11,6 +11,9 @@ def main():
     # Just do a quick test run? 
     # Else, run a longer one to give smooth posteriors
     quick = False
+    show_burnin = False
+    show_chains = True
+    show_posteriors = True
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
     
@@ -70,56 +73,58 @@ def main():
     # discard burn-in points and reshape
     trace = sampler.chain[:, nburn:, :] 
     trace = trace.reshape(-1, ndim)
-    
-    #print(np.percentile(trace,nwalkers,axis=0))
+
+    labels = ['m2', 'period', 'inclination']
     
     ## Show walkers during burn-in (NOTE: by starting at the best-fit, this will look the same as post-burn-in)
-    labels = ['m2', 'period', 'inclination']
-    fig = plt.figure(figsize=(10,5))
-    j=0
-    for i, chain in enumerate(sampler.chain[:, :nburn, :].T): 
-        if i in [1,6,7]:
-            plt.subplot(3, 1, j+1)
-            if i==1:
-                chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
-            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            plt.ylabel(labels[j])
-            j+=1
-    plt.show()
+    if show_burnin:
+        fig = plt.figure(figsize=(10,5))
+        j=0
+        for i, chain in enumerate(sampler.chain[:, :nburn, :].T): 
+            if i in [1,6,7]:
+                plt.subplot(3, 1, j+1)
+                if i==1:
+                    chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
+                plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+                plt.ylabel(labels[j])
+                j+=1
+        plt.show()
     
     ## Show walkers after burn-in
-    fig = plt.figure(figsize=(10,5))
-    j=0
-    for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
-        if i in [1,6,7]:
-            plt.subplot(3, 1, j+1)
-            if i==1:
-                chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
-            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            print('mean ',np.mean(chain))
-            print('median ',np.mean(chain))
-            print('variance ',np.var(chain))
-            #print('chain ',repr(chain))
-            plt.ylabel(labels[j])
-            j+=1
-    plt.show()
+    if show_chains:
+        fig = plt.figure(figsize=(10,5))
+        j=0
+        for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
+            if i in [1,6,7]:
+                plt.subplot(3, 1, j+1)
+                if i==1:
+                    chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
+                plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+                print('mean ',np.mean(chain))
+                print('median ',np.mean(chain))
+                print('variance ',np.var(chain))
+                #print('chain ',repr(chain))
+                plt.ylabel(labels[j])
+                j+=1
+        plt.show()
         
     ## inspect posteriors
-    fig = plt.figure(figsize=(12,3))
-    j=0
-    for i in range(ndim):
-        if i in [1,6,7]:
-            plt.subplot(1,3,j+1)
-            trace_use = trace[:,i]
-            if i==1:
-                trace_use*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
-            plt.hist(trace_use, 100, color="k", histtype="step")
-            yl = plt.ylim()
-            plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
-            plt.title("{}".format(labels[j]))
-            plt.legend()
-            j+=1
-    plt.show()
+    if show_posteriors:
+        fig = plt.figure(figsize=(12,3))
+        j=0
+        for i in range(ndim):
+            if i in [1,6,7]:
+                plt.subplot(1,3,j+1)
+                trace_use = trace[:,i]
+                if i==1:
+                    trace_use*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
+                plt.hist(trace_use, 100, color="k", histtype="step")
+                yl = plt.ylim()
+                plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
+                plt.title("{}".format(labels[j]))
+                plt.legend()
+                j+=1
+        plt.show()
     
     ## make a corner plot
     #import corner
