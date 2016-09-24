@@ -3,6 +3,7 @@ ExoSOFTmodel
 
 [![Build Status](https://travis-ci.org/kylemede/ExoSOFTmodel.svg?branch=master)](https://travis-ci.org/kylemede/ExoSOFTmodel)
 [![License](https://img.shields.io/badge/license-GPL-blue.svg)](https://github.com/kylemede/ExoSOFTmodel/blob/master/LICENSE)
+[![PyPI version](https://badge.fury.io/py/ExoSOFTmodel.svg)](https://badge.fury.io/py/ExoSOFTmodel)
 
 An astronomical model for calculating the predicted astrometry and radial velocity due to a companion.
 
