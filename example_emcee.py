@@ -8,6 +8,9 @@ from six.moves import range
 
 
 def main():
+    # Just do a quick test run? 
+    # Else, run a longer one to give smooth posteriors
+    quick = False
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
     
@@ -48,9 +51,14 @@ def main():
     
     ncpu = multiprocessing.cpu_count()
     ndim = len(sd['range_maxs']) # number of parameters in the model 
-    nwalkers = 200 # number of MCMC walkers 
-    nburn = 500 # "burn-in" to stabilize chains 
-    nsteps = 5000 # number of MCMC steps to take 
+    if quick:
+        nwalkers = 50 # number of MCMC walkers 
+        nburn = 500 # "burn-in" to stabilize chains 
+        nsteps = 2000 # number of MCMC steps to take 
+    else:
+        nwalkers = 200 # number of MCMC walkers 
+        nburn = 500 # "burn-in" to stabilize chains 
+        nsteps = 10000 # number of MCMC steps to take 
     starting_guesses = ExoSOFTmodel.make_starting_params(start_params,nwalkers,scale=0.01)
     
     ## Call emcee to explore the parameter space
