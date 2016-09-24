@@ -33,7 +33,7 @@ else:
 setup(    
     name='ExoSOFTmodel', 
     packages =['ExoSOFTmodel'],
-    version="1.0.4", 
+    version="1.0.8", 
     author='Kyle Mede',
     author_email = 'kylemede@gmail.com',
     url = 'https://github.com/kylemede/ExoSOFTmodel',

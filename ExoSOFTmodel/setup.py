@@ -1,3 +1,6 @@
+## build with command:
+#python setup.py build_ext --inplace
+
 # Two identical ways to compile the code.  
 # I will use the second version for now and comment out the first.
 
@@ -16,7 +19,7 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
 ext_modules = [
-               Extension("cytools",["cytools.pyx"])               
+               Extension("cytools",["cytools.pyx"],include_dirs=['.'])               
                ]
 
 ## Modifications to get cython code to be documented by Sphinx
@@ -30,5 +33,7 @@ for e in ext_modules:
 setup(
       name = 'ExoSOFTmodel',
       cmdclass = {'build_ext':build_ext},
-      ext_modules = ext_modules,      
+      ext_modules = ext_modules,   
+      script_args=['build_ext'],   
+      options={'build_ext':{'inplace':True, 'force':True}}
       )
