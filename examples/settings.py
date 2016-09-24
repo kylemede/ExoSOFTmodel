@@ -38,7 +38,7 @@ params_dict = {
 'm1_max' : 2.55,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 # Note: 1Mj ~ 0.00095 Msun
-'m2_min' : 0.0001,
+'m2_min' : 0.00001,
 'm2_max' : 0.005,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'para_min' : 1.0,

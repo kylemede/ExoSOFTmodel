@@ -8,6 +8,10 @@ from six.moves import range
 
 
 def main():
+    """
+    A simple example of how to instantiate the objects used by ExoSOFTmodel 
+    with their required input parameters.  
+    """
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
     
@@ -34,79 +38,27 @@ def main():
              m1_est=sd['m1_est'], m1_err=sd['m1_err'], m2_est=sd['m2_est'], 
              m2_err=sd['m2_err'])
     
-    
-    
-    
     ## define a set of starting parameters
-    # The user can use any reasonable guess here.  For this example, 
-    # we will use previously determined best-fit values for simplicity. 
-    # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
+    # The user can use any reasonable guess here.  For the 5% Jupiter analogue 
+    # used in this example, we will use expected values for simplicity. 
     m2 = ExoSOFTmodel.kg_per_mjup/ExoSOFTmodel.kg_per_msun
     sqrte_sinomega = np.sqrt(0.048)*np.sin((np.pi/180.0)*14.8)
     sqrte_cosomega = np.sqrt(0.048)*np.cos((np.pi/180.0)*14.8)
-    start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0]
+    # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
+    start_params = [1.0,m2,50,100.6,sqrte_sinomega,2450639.0,11.9,45.0,sqrte_cosomega,0.01]
+    ## NOTE: this array must be a numpy array with dtype=np.dtype('d').
     start_params = np.array(start_params,dtype=np.dtype('d'))
+    
+    ## calculate the log posterior for the provided data and input parameters
     ln_post = ExoSOFTmodel.ln_posterior(start_params, Model, Data, Params, Priors)
+    
+    ## print a few basic results of the fit
     print('chi_squared_3d ',Model.chi_squared_3d)
     print('reduced chi_squared_3d ',(Model.chi_squared_3d/35.9))
     print('prior ',Model.prior)
     print('ln_post ',ln_post)
-    
-    """
-    ncpu = multiprocessing.cpu_count()-1
-    ndim = len(sd['range_maxs']) # number of parameters in the model 
-    nwalkers = 50 # number of MCMC walkers 
-    nburn = 1000 # "burn-in" to stabilize chains 
-    nsteps = 20000 # number of MCMC steps to take 
-    starting_guesses = []
-    for i in range(nwalkers):
-        starting_guesses.append(start_params)
-    
-    sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, 
-                                    args=[Model, Data, Params, Priors], threads=ncpu)
-    sampler.run_mcmc(starting_guesses, nsteps)
-    
-    # chain is of shape (nwalkers, nsteps, ndim)
-    # discard burn-in points and reshape
-    trace = sampler.chain[:, nburn:, :] 
-    trace = trace.reshape(-1, ndim)
-    
-    ## Show walkers during burn-in (NOTE: by starting at the best-fit, this will look the same as post-burn-in)
-    labels = ['m2', 'period', 'inclination']
-    fig = plt.figure(figsize=(10,5))
-    for i, chain in enumerate(sampler.chain[:, :nburn, :].T):
-        if i in [1,6,7]:
-            plt.subplot(3, 1, i+1)
-            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            plt.ylabel(labels[i])
-    plt.show()
-    
-    ## Show walkers after burn-in
-    fig = plt.figure(figsize=(10,5))
-    for i, chain in enumerate(sampler.chain[:, nburn:, :].T):
-        if i in [1,6,7]:
-            plt.subplot(3, 1, i+1)
-            plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-            plt.ylabel(labels[i])
-    plt.show()
-        
-    ## inspect posteriors
-    fig = plt.figure(figsize=(12,3))
-    for i in range(ndim):
-        if i in [1,6,7]:
-            plt.subplot(1,3,i+1)
-            plt.hist(trace[:,i], 100, color="k", histtype="step")
-            yl = plt.ylim()
-            plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
-            plt.title("{}".format(labels[i]))
-            plt.legend()
-    plt.show()
-    
-    ## make a corner plot
-    import corner
-    fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
-    plt.show()
-    """
 
 if __name__ == '__main__':
     main()
+    
+#EOF

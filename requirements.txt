@@ -4,3 +4,5 @@ numpy
 cython
 distutils
 shutil
+emcee
+corner
