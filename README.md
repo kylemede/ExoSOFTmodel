@@ -31,6 +31,7 @@ Building the documentation
   can be built following the install of the required packages sphinx and sphinx_rtd_theme with:
   
   $pip install sphinx
+  
   $pip install sphinx_rtd_theme
 
 
