@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import ExoSOFTmodel
 import emcee
 from six.moves import range
+import KMlogger
 
+log = KMlogger.getLogger('main',lvl=20,addFH=False)
 
 def main():
     """
@@ -58,10 +60,10 @@ def main():
     ln_post = ExoSOFTmodel.ln_posterior(start_params, Model, Data, Params, Priors)
     
     ## print a few basic results of the fit
-    print('chi_squared_3d ',Model.chi_squared_3d)
-    print('reduced chi_squared_3d ',(Model.chi_squared_3d/35.9))
-    print('prior ',Model.prior)
-    print('ln_post ',ln_post)
+    log.info('chi_squared_3d '+str(Model.chi_squared_3d))
+    log.info('reduced chi_squared_3d '+str(Model.chi_squared_3d/35.9))
+    log.info('prior '+str(Model.prior))
+    log.info('ln_post '+str(ln_post))
 
 if __name__ == '__main__':
     main()

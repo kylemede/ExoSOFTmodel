@@ -7,28 +7,6 @@ import KMlogger
 from six.moves import range
 
 log = KMlogger.getLogger('main.model',lvl=100,addFH=False)
-"""
-New Design:
------------
-    ExoSOFTmodel Python object for direct use by ExoSOFT OR others.
-    This module will contain a likelihood func that will take a 
-    set of params, and a loaded up ExoSOFTmodel, and it returns 
-    the likelihood (or Log(likelihood)).
-    
-    Notes:
-    -Calculate reduced chis in simulator, not here.  
-
-
-
-USE:
-in ExoSOFT:
-    1. Instantiate ExoSOFTmodel obj, with all necessary params
-    in a loop:
-        -call ln_post, passing in model obj and directly varried params array
-        -recieve log posterior value and full list of cacl&varried params that is stored in model obj as member var
-        -check if resulting log posterior -> accepted, update accepted array
-        -else, try again
-"""
 
 class ExoSOFTmodel(object):
     """

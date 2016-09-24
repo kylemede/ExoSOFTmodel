@@ -6,7 +6,9 @@ import ExoSOFTmodel
 import emcee
 import corner
 from six.moves import range
+import KMlogger
 
+log = KMlogger.getLogger('main',lvl=20,addFH=False)
 
 def main():
     """
@@ -116,9 +118,9 @@ def main():
                     # convert m2 units to Mjup instead of Msun
                     chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
                 plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
-                print('mean ',np.mean(chain))
-                print('median ',np.median(chain))
-                print('variance ',np.var(chain))
+                log.info('mean = '+str(np.mean(chain)))
+                log.info('median = '+str(np.median(chain)))
+                log.info('variance = '+str(np.var(chain)))
                 #print('chain ',repr(chain))
                 plt.ylabel(labels[j])
                 j+=1

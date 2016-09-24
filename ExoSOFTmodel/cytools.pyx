@@ -1,13 +1,20 @@
+# cython: embedsignature=True
 import constants as const
 
 #python setup.py build_ext --inplace
 
 #List of available C funcs in math.h:
 #https://en.wikipedia.org/wiki/C_mathematical_functions
+"""
+Docstring at top of cytools.pyx
+"""
 
 cdef anomalies(double p, double tc, double to, double ecc, 
                double epoch, double [:] taea):
     """ 
+    anomalies(double p, double tc, double to, double ecc, 
+               double epoch, double [:] taea)
+               
     Calculate the True and Eccentric Anomalies.
     Remember that in RV, there is occasionally a phase shift due to 
     the Tc!=To, that doesn't exist in DI.
@@ -90,7 +97,7 @@ cdef orbit_rv(double [:] epochs, double ecc, double to, double tc, double p,
     """ 
     Calculates the predicted rv for a each epoch in epochs array.
      
-    model value = calculated rv + the instrument specific offset
+    model value = calculated rv + the instrument specific offset.
     """
     cdef double top, ea, ta, rv, arg_peri_rad
     cdef int npts
