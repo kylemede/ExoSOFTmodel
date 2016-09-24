@@ -144,9 +144,9 @@ def main():
         plt.show()
     
     ## make a corner plot
-    show_corner
-    fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
-    plt.show()
+    if show_corner:
+        fig = corner.corner(trace, labels=labels, quantiles=[0.16, 0.5, 0.84], truths=start_params)
+        plt.show()
 
 if __name__ == '__main__':
     main()

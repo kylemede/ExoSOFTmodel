@@ -10,21 +10,26 @@ from six.moves import range
 def main():
     """
     A simple example of how to instantiate the objects used by ExoSOFTmodel 
-    with their required input parameters.  
+    with their required input parameters.  This example uses the 5% Jupiter 
+    analogue discussed in the release paper and calculates the chi squared
+    of the expected parameters for the simulated data.
     """
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./examples/settings.py')
     
-    ## instantiate main objects/classes: ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.  And minor class, ExoSOFTmodel
+    ## load in the RV and Astrometry (DI) data
+    (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
+    (epochs_rv, rv, rv_err, rv_inst_num) = ExoSOFTmodel.load_rv_data(sd['rv_dataFile'])
+    
+    ## instantiate main objects/classes: 
+    #  ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.  
+    #  And minor class, ExoSOFTmodel
     Model = ExoSOFTmodel.ExoSOFTmodel()  ###$$$$$$$$$ Kill this by merging into another one? OR merging priors into here?
     
     Params = ExoSOFTmodel.ExoSOFTparams(sd['omega_offset_di'], 
              sd['omega_offset_rv'], sd['vary_tc'], sd['tc_equal_to'], 
              sd['data_mode'], sd['low_ecc'], sd['range_maxs'], sd['range_mins'], 
              sd['num_offsets'])
-    
-    (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
-    (epochs_rv, rv, rv_err, rv_inst_num) = ExoSOFTmodel.load_rv_data(sd['rv_dataFile'])
     
     Data = ExoSOFTmodel.ExoSOFTdata(epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
                  rv, rv_err, rv_inst_num,sd['data_mode'], sd['pasa'])
