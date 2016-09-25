@@ -1,6 +1,5 @@
 six
 KMlogger
 numpy
-cython
 emcee
 corner
