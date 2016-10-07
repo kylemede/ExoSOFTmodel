@@ -9,6 +9,8 @@ An astronomical model for calculating the predicted astrometry and radial veloci
 
 Examples are provided, including ones showing how to use ExoSOFTmodel with the popular emcee, and another for very simple initial testing.
 
+Please read the [documentation](http://exosoftmodel.readthedocs.io/en/latest/) for further details (some documentation is up, with much more to come soon).
+
 
 Installation Notes
 ==================
