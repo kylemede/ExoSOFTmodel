@@ -3,6 +3,8 @@ from __future__ import absolute_import
 from __future__ import print_function
 import numpy as np
 from .cytools import orbit, model_input_pars
+from .tools import  load_di_data, load_rv_data
+from .priors import ExoSOFTpriors
 import KMlogger
 from six.moves import range
 
@@ -11,7 +13,7 @@ log = KMlogger.getLogger('main.model',lvl=100,addFH=False)
 class ExoSOFTmodel(object):
     """
     """
-    def __init__(self):
+    def __init__(self,sd):
         
         ####################
         ## member variables
@@ -21,10 +23,30 @@ class ExoSOFTmodel(object):
         self.chi_squared_di = 0
         self.chi_squared_rv = 0
         self.prior = 0
+        self.sd = sd
         ## TRACK BEST CHI SQUAREDS FOUND SO FAR IN HERE?
         ## makes more sense to change this to 'ExoSOFTresults' and name the object 'Results'??!!
+        ## load in the RV and Astrometry (DI) data
+        (epochs_di, rapa, rapa_err, decsa, decsa_err) = load_di_data(self.sd['di_dataFile'])
+        (epochs_rv, rv, rv_err, rv_inst_num) = load_rv_data(self.sd['rv_dataFile'])
         
         ## prior functions??
+        self.Params = ExoSOFTparams(self.sd['omega_offset_di'], 
+             self.sd['omega_offset_rv'], self.sd['vary_tc'], self.sd['tc_equal_to'], 
+             self.sd['data_mode'], self.sd['low_ecc'], self.sd['range_maxs'], self.sd['range_mins'], 
+             self.sd['num_offsets'])
+    
+        self.Data = ExoSOFTdata(epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
+                 rv, rv_err, rv_inst_num,self.sd['data_mode'], self.sd['pasa'])
+    
+        self.Priors = ExoSOFTpriors(ecc_prior=self.sd['ecc_prior'], 
+             p_prior=self.sd['p_prior'], inc_prior=self.sd['inc_prior'], 
+             m1_prior=self.sd['m1_prior'], m2_prior=self.sd['m2_prior'], 
+             para_prior=self.sd['para_prior'], inc_min=self.sd['inc_min'],
+             inc_max=self.sd['inc_max'], p_min=self.sd['p_min'], p_max=self.sd['p_max'],
+             para_est=self.sd['para_est'], para_err=self.sd['para_err'], 
+             m1_est=self.sd['m1_est'], m1_err=self.sd['m1_err'], m2_est=self.sd['m2_est'], 
+             m2_err=self.sd['m2_err'])
     
 class ExoSOFTparams(object):
     """
@@ -164,7 +186,7 @@ class ExoSOFTdata(object):
         self.data_mode = data_mode
         self.pasa = pasa
 
-def ln_posterior(pars, Model, Data, Params, Priors):
+def ln_posterior(pars, Model):
     """
     Calculates the likelihood for a given set of inputs.
     Then calculate the natural logarithm of the posterior probability.
@@ -181,18 +203,18 @@ def ln_posterior(pars, Model, Data, Params, Priors):
     
     """    
     ## convert params from raw values
-    Params.direct_pars = pars
-    Params.make_model_in()
+    Model.Params.direct_pars = pars
+    Model.Params.make_model_in()
         
     ## Range check on proposed params, set ln_post=zero if outside ranges.
     ln_post = -np.inf
-    in_range = Params.check_range()
+    in_range = Model.Params.check_range()
     if in_range:         
         ## Call Cython func to calculate orbit. ie. -> predicted x,y,rv values.
-        orbit(Params.model_in_pars, Params.offsets, Data.pasa, 
-                      Data.data_mode, Data.epochs_di, Data.epochs_rv, 
-                      Data.rv_inst_num, Data.rapa_model, Data.decsa_model, 
-                      Data.rv_model,Params.taea)
+        orbit(Model.Params.model_in_pars, Model.Params.offsets, Model.Data.pasa, 
+              Model.Data.data_mode, Model.Data.epochs_di, Model.Data.epochs_rv, 
+              Model.Data.rv_inst_num, Model.Data.rapa_model, 
+              Model.Data.decsa_model, Model.Data.rv_model, Model.Params.taea)
                 
         #print('measured rv ',repr(Data.rv))
         #print('model rv ',repr(Data.rv_model))
@@ -200,11 +222,11 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         #  NOTE: The log(2*pi*sigma**2) term is not included here as the 
         #        likelihood is always used as a likelihood ratio.
         chi_sqr_rv, chi_sqr_rapa, chi_sqr_decsa = 0, 0, 0
-        if (len(Data.epochs_rv)>0) and (Data.data_mode!='DI'):
-            chi_sqr_rv = np.sum((Data.rv-Data.rv_model)**2 / Data.rv_err**2)
-        if (len(Data.epochs_di)>0) and (Data.data_mode!='RV'):
-            chi_sqr_rapa = np.sum((Data.rapa-Data.rapa_model)**2 / Data.rapa_err**2)
-            chi_sqr_decsa = np.sum((Data.decsa-Data.decsa_model)**2 / Data.decsa_err**2)
+        if (len(Model.Data.epochs_rv)>0) and (Model.Data.data_mode!='DI'):
+            chi_sqr_rv = np.sum((Model.Data.rv-Model.Data.rv_model)**2 / Model.Data.rv_err**2)
+        if (len(Model.Data.epochs_di)>0) and (Model.Data.data_mode!='RV'):
+            chi_sqr_rapa = np.sum((Model.Data.rapa-Model.Data.rapa_model)**2 / Model.Data.rapa_err**2)
+            chi_sqr_decsa = np.sum((Model.Data.decsa-Model.Data.decsa_model)**2 / Model.Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa
         #print('chi_sqr_rv',chi_sqr_rv)
         #print('chi_sqr_rapa',chi_sqr_rapa)
@@ -214,14 +236,14 @@ def ln_posterior(pars, Model, Data, Params, Priors):
         ln_lik = -0.5*chi_sqr_3d
         #print('ln_lik',ln_lik)
         ## Make version of params with chi_sqr_3d for storing during ExoSOFT
-        Params.make_stored(chi_sqr_3d)
+        Model.Params.make_stored(chi_sqr_3d)
         ## store the chi sqr values in model object for printing in ExoSOFT.
         Model.chi_squared_3d = chi_sqr_3d
         Model.chi_squared_di = chi_sqr_rapa + chi_sqr_decsa
         Model.chi_squared_rv = chi_sqr_rv
         
         ## Calculate priors
-        prior = Priors.priors(Params.model_in_pars)
+        prior = Model.Priors.priors(Model.Params.model_in_pars)
         Model.prior = prior
         #print('np.log(prior)',np.log(prior))
         #print('prior ',prior)

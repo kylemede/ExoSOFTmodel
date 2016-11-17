@@ -22,7 +22,7 @@ def main():
     ## Simple boolean flags to control the basic steps of this script.
     # Just do a quick test run? 
     # Else, run a longer one to give smooth posteriors
-    quick = False
+    quick = True
     # What plots should be made?
     show_burnin = False
     show_chains = True
@@ -32,31 +32,10 @@ def main():
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./settings.py')
     
-    ## load in the RV and Astrometry (DI) data
-    (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
-    (epochs_rv, rv, rv_err, rv_inst_num) = ExoSOFTmodel.load_rv_data(sd['rv_dataFile'])
-    
-    ## instantiate main objects/classes: 
+    ## Instantiate main objects/classes: 
     #  ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.  
-    #  And minor class, ExoSOFTmodel
-    Model = ExoSOFTmodel.ExoSOFTmodel()  ###$$$$$$$$$ Kill this by merging into another one? OR merging priors into here?
-    
-    Params = ExoSOFTmodel.ExoSOFTparams(sd['omega_offset_di'], 
-             sd['omega_offset_rv'], sd['vary_tc'], sd['tc_equal_to'], 
-             sd['data_mode'], sd['low_ecc'], sd['range_maxs'], sd['range_mins'], 
-             sd['num_offsets'])
-    
-    Data = ExoSOFTmodel.ExoSOFTdata(epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
-                 rv, rv_err, rv_inst_num,sd['data_mode'], sd['pasa'])
-    
-    Priors = ExoSOFTmodel.ExoSOFTpriors(ecc_prior=sd['ecc_prior'], 
-             p_prior=sd['p_prior'], inc_prior=sd['inc_prior'], 
-             m1_prior=sd['m1_prior'], m2_prior=sd['m2_prior'], 
-             para_prior=sd['para_prior'], inc_min=sd['inc_min'],
-             inc_max=sd['inc_max'], p_min=sd['p_min'], p_max=sd['p_max'],
-             para_est=sd['para_est'], para_err=sd['para_err'], 
-             m1_est=sd['m1_est'], m1_err=sd['m1_err'], m2_est=sd['m2_est'], 
-             m2_err=sd['m2_err'])
+    #  These are all instantiated as member variables of ExoSOFTmodel class.
+    Model = ExoSOFTmodel.ExoSOFTmodel(sd)
     
     ## define a set of starting parameters
     # The user can use any reasonable guess here.  For the 5% Jupiter analogue 
@@ -118,6 +97,7 @@ def main():
                     # convert m2 units to Mjup instead of Msun
                     chain*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
                 plt.plot(chain, drawstyle='steps', color='k', alpha=0.2)
+                log.info('\nparameter # '+str(i))
                 log.info('mean = '+str(np.mean(chain)))
                 log.info('median = '+str(np.median(chain)))
                 log.info('variance = '+str(np.var(chain)))
@@ -133,13 +113,15 @@ def main():
         for i in range(ndim):
             if i in [1,6,7]:
                 plt.subplot(1,3,j+1)
+                true_val = start_params[i]
                 trace_use = trace[:,i]
                 if i==1:
                     # convert m2 units to Mjup instead of Msun
                     trace_use*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
+                    true_val*= ExoSOFTmodel.kg_per_msun/ExoSOFTmodel.kg_per_mjup
                 plt.hist(trace_use, 100, color="k", histtype="step")
                 yl = plt.ylim()
-                plt.vlines(start_params[i], yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
+                plt.vlines(true_val, yl[0], yl[1], color='blue', lw=3, alpha=0.25, label='true')
                 plt.title("{}".format(labels[j]))
                 plt.legend()
                 j+=1

@@ -72,7 +72,7 @@ params_dict = {
 
 data_dict = {
              # full path to input astrometry data file. [string]
-'di_dataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFT/examples/DIdata.dat',                
+'di_dataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFTmodel/examples/DIdata.dat',                
 # full path to input radial velocity data file. [string]
 'rv_dataFile': '/mnt/HOME/MEGA/Dropbox/EclipseWorkspaceDB/ExoSOFTmodel/examples/RVdata.dat', 
 # data mode, choices {'RV','DI','3D'} [string]

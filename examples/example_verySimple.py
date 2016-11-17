@@ -19,31 +19,10 @@ def main():
     ## load up default settings dictionary
     sd = ExoSOFTmodel.load_settings_dict('./settings.py')
     
-    ## load in the RV and Astrometry (DI) data
-    (epochs_di, rapa, rapa_err, decsa, decsa_err) = ExoSOFTmodel.load_di_data(sd['di_dataFile'])
-    (epochs_rv, rv, rv_err, rv_inst_num) = ExoSOFTmodel.load_rv_data(sd['rv_dataFile'])
-    
-    ## instantiate main objects/classes: 
+    ## Instantiate main objects/classes: 
     #  ExoSOFTpriors, ExoSOFTdata and ExoSOFTparams.  
-    #  And minor class, ExoSOFTmodel
-    Model = ExoSOFTmodel.ExoSOFTmodel()  ###$$$$$$$$$ Kill this by merging into another one? OR merging priors into here?
-    
-    Params = ExoSOFTmodel.ExoSOFTparams(sd['omega_offset_di'], 
-             sd['omega_offset_rv'], sd['vary_tc'], sd['tc_equal_to'], 
-             sd['data_mode'], sd['low_ecc'], sd['range_maxs'], sd['range_mins'], 
-             sd['num_offsets'])
-    
-    Data = ExoSOFTmodel.ExoSOFTdata(epochs_di, epochs_rv, rapa, rapa_err, decsa, decsa_err,
-                 rv, rv_err, rv_inst_num,sd['data_mode'], sd['pasa'])
-    
-    Priors = ExoSOFTmodel.ExoSOFTpriors(ecc_prior=sd['ecc_prior'], 
-             p_prior=sd['p_prior'], inc_prior=sd['inc_prior'], 
-             m1_prior=sd['m1_prior'], m2_prior=sd['m2_prior'], 
-             para_prior=sd['para_prior'], inc_min=sd['inc_min'],
-             inc_max=sd['inc_max'], p_min=sd['p_min'], p_max=sd['p_max'],
-             para_est=sd['para_est'], para_err=sd['para_err'], 
-             m1_est=sd['m1_est'], m1_err=sd['m1_err'], m2_est=sd['m2_est'], 
-             m2_err=sd['m2_err'])
+    #  These are all instantiated as member variables of ExoSOFTmodel class.
+    Model = ExoSOFTmodel.ExoSOFTmodel(sd)
     
     ## define a set of starting parameters
     # The user can use any reasonable guess here.  For the 5% Jupiter analogue 
