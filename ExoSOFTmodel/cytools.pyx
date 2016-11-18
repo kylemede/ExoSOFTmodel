@@ -184,9 +184,9 @@ cdef orbit_di(double [:] epochs, double long_an, double ecc, double to,
             rapa_model[i] = ra
             decsa_model[i] = dec
         
-def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,
-                     str data_mode, double omega_offset_di, double omega_offset_rv,
-                     double [:] offsets, double [:] model_in_pars):
+def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, 
+                     bint vary_tc, str data_mode, double omega_offset_di, 
+                     double omega_offset_rv, double [:] model_in_pars):
     # pars: [m1,m2,parallax,long_an, e/sqrte_sinomega,to/tc,p,inc,arg_peri/sqrte_cosomega,v1,v2...]
     # model_in_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
     
@@ -214,7 +214,7 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_
     ###########################################################################
     [m1, m2, parallax, long_an] = pars[0:4]
     [to, p, inc] = pars[5:8]
-    offsets = pars[9:]
+    #offsets = pars[9:]
     
     ## update varied omega values to omegaDI and omegaRV here
     # Get the model version of each omega.

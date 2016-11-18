@@ -5,7 +5,7 @@
 # I will use the second version for now and comment out the first.
 
 # Version 1 (simpler)
-
+"""
 from distutils.core import setup
 from Cython.Build import cythonize
 
@@ -29,4 +29,3 @@ setup(
       script_args=['build_ext'],   
       options={'build_ext':{'inplace':True, 'force':True}}
       )
-"""

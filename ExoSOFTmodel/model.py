@@ -81,11 +81,12 @@ class ExoSOFTparams(object):
         self.mins = range_mins
         ## prep versions of all param arrays
         self.num_offsets = num_offsets
+        # direct_pars: [m1,m2,parallax,long_an,e OR sqrt(e)*sin(arg_peri),to/tc,p,inc,arg_peri OR sqrt(e)*cos(arg_peri),v1,v2...]
         self.direct_pars = np.zeros((9+num_offsets),dtype=np.dtype('d'))
         # model_in_params: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
         self.model_in_pars = np.zeros((14),dtype=np.dtype('d'))
         # stored_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,a_tot_au,chi_sqr,K,v1,v2...]
-        self.stored_pars = np.zeros((12+num_offsets),dtype=np.dtype('d'))
+        self.stored_pars = np.zeros((13+num_offsets),dtype=np.dtype('d'))
         self.offsets = np.zeros((num_offsets),dtype=np.dtype('d'))
         #check_pars: [m1, m2, parallax, long_an, e, to/tc, p, inc, arg_peri]
         self.check_pars = np.zeros((9+num_offsets),dtype=np.dtype('d'))
@@ -97,8 +98,10 @@ class ExoSOFTparams(object):
         of those used ans inputs to during model calculations.
         """        
         model_input_pars(self.direct_pars, self.low_ecc, self.tc_equal_to, 
-                   self.vary_tc, self.di_only, self.omega_offset_di, self.omega_offset_rv,
-                   self.offsets, self.model_in_pars)
+                   self.vary_tc, self.di_only, self.omega_offset_di, 
+                   self.omega_offset_rv, self.model_in_pars)
+        self.offsets = self.direct_pars[9:]
+        #print('self.offsets = '+repr(self.offsets))
         ## Wrap periodic params into allowed ranges.  ie. long_an and arg_peri
         m_par_ints = [3,9]
         min_max_ints = [3,8]
@@ -112,6 +115,28 @@ class ExoSOFTparams(object):
                 self.model_in_pars[m_par_ints[i]]-=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
         #print(repr(self.model_in_pars))
+    def stored_to_direct(self,pars):
+        """ take a set of parameters matching 'stored_pars' and make the 
+        directly varied versions matching 'direct_pars'.
+        Note:
+        direct_pars: [m1,m2,parallax,long_an,e OR sqrt(e)*sin(arg_peri),to/tc,p,inc,arg_peri OR sqrt(e)*cos(arg_peri),v1,v2...]
+        stored_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,a_tot_au,chi_sqr,K,v1,v2...]
+        """
+        direct_ary = np.zeros((9+self.num_offsets),dtype=np.dtype('d'))
+        direct_ary[0:4] = pars[0:4]
+        if self.low_ecc:
+            direct_ary[4] = np.sqrt(pars[4])*np.sin(np.radians(pars[9]))
+            direct_ary[8] = np.sqrt(pars[4])*np.cos(np.radians(pars[9]))
+        else:
+            direct_ary[4] = pars[4]
+            direct_ary[8] = pars[9]
+        if self.vary_tc:
+            direct_ary[5] = pars[6]
+        else:
+            direct_ary[5] = pars[5]
+        direct_ary[6:8] = pars[7:9]
+        direct_ary[9:] = pars[13:]
+        return direct_ary
         
     def make_stored(self,chi_squared):
         """ 
@@ -122,9 +147,10 @@ class ExoSOFTparams(object):
         # model_in_params: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
         # stored_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,a_tot_au,chi_sqr,K,v1,v2...]
         self.stored_pars[0:10] = self.model_in_pars[0:10]
-        self.stored_pars[10] = self.model_in_pars[12]
+        self.stored_pars[10] = self.model_in_pars[12] #a_tot_au
         self.stored_pars[11] = chi_squared
-        self.stored_pars[11:] = self.offsets[:]
+        self.stored_pars[12] = self.model_in_pars[13] #K
+        self.stored_pars[12:] = self.offsets[:]
          
     def check_range(self):
         """Determine if all parameters in the full list are within their 
@@ -143,7 +169,7 @@ class ExoSOFTparams(object):
         if len(self.check_pars)!=len(self.maxs)!=len(self.mins):
             print("LENGTH OF CHECK_PARAMS IS NOT EQUAL TO LENGTH OF MINS OR MAXS!!!")
         in_range = True
-        for i in range(9):
+        for i in range(len(self.check_pars)):
             if (self.check_pars[i]>self.maxs[i]) or (self.check_pars[i]<self.mins[i]):
                 in_range = False
         return in_range

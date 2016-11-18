@@ -1552,7 +1552,7 @@ static PyObject *__pyx_kp_s_unable_to_allocate_array_data;
 static PyObject *__pyx_kp_s_unable_to_allocate_shape_and_str;
 static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_vary_tc;
-static PyObject *__pyx_pf_7cytools_model_input_pars(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pars, int __pyx_v_low_ecc, int __pyx_v_tc_equal_to, int __pyx_v_vary_tc, PyObject *__pyx_v_data_mode, double __pyx_v_omega_offset_di, double __pyx_v_omega_offset_rv, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_offsets, __Pyx_memviewslice __pyx_v_model_in_pars); /* proto */
+static PyObject *__pyx_pf_7cytools_model_input_pars(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pars, int __pyx_v_low_ecc, int __pyx_v_tc_equal_to, int __pyx_v_vary_tc, PyObject *__pyx_v_data_mode, double __pyx_v_omega_offset_di, double __pyx_v_omega_offset_rv, __Pyx_memviewslice __pyx_v_model_in_pars); /* proto */
 static PyObject *__pyx_pf_7cytools_2orbit(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_model_in_pars, __Pyx_memviewslice __pyx_v_offsets, int __pyx_v_pasa, PyObject *__pyx_v_data_model, __Pyx_memviewslice __pyx_v_epochs_di, __Pyx_memviewslice __pyx_v_epochs_rv, __Pyx_memviewslice __pyx_v_rv_inst_num, __Pyx_memviewslice __pyx_v_rapa_model, __Pyx_memviewslice __pyx_v_decsa_model, __Pyx_memviewslice __pyx_v_rv_model, __Pyx_memviewslice __pyx_v_taea); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
@@ -2924,7 +2924,7 @@ static PyObject *__pyx_f_7cytools_orbit_di(__Pyx_memviewslice __pyx_v_epochs, do
  *             rapa_model[i] = ra
  *             decsa_model[i] = dec             # <<<<<<<<<<<<<<
  * 
- * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,
+ * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,
  */
       __pyx_t_16 = __pyx_v_i;
       __pyx_t_8 = -1;
@@ -2967,14 +2967,14 @@ static PyObject *__pyx_f_7cytools_orbit_di(__Pyx_memviewslice __pyx_v_epochs, do
 /* "cytools.pyx":187
  *             decsa_model[i] = dec
  * 
- * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,             # <<<<<<<<<<<<<<
- *                      str data_mode, double omega_offset_di, double omega_offset_rv,
- *                      double [:] offsets, double [:] model_in_pars):
+ * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,             # <<<<<<<<<<<<<<
+ *                      bint vary_tc, str data_mode, double omega_offset_di,
+ *                      double omega_offset_rv, double [:] model_in_pars):
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_7cytools_model_input_pars[] = "model_input_pars(__Pyx_memviewslice pars, bool low_ecc, bool tc_equal_to, bool vary_tc, str data_mode, double omega_offset_di, double omega_offset_rv, __Pyx_memviewslice offsets, __Pyx_memviewslice model_in_pars)";
+static char __pyx_doc_7cytools_model_input_pars[] = "model_input_pars(__Pyx_memviewslice pars, bool low_ecc, bool tc_equal_to, bool vary_tc, str data_mode, double omega_offset_di, double omega_offset_rv, __Pyx_memviewslice model_in_pars)";
 static PyMethodDef __pyx_mdef_7cytools_1model_input_pars = {"model_input_pars", (PyCFunction)__pyx_pw_7cytools_1model_input_pars, METH_VARARGS|METH_KEYWORDS, __pyx_doc_7cytools_model_input_pars};
 static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   __Pyx_memviewslice __pyx_v_pars = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -2984,19 +2984,17 @@ static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObj
   PyObject *__pyx_v_data_mode = 0;
   double __pyx_v_omega_offset_di;
   double __pyx_v_omega_offset_rv;
-  CYTHON_UNUSED __Pyx_memviewslice __pyx_v_offsets = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_model_in_pars = { 0, 0, { 0 }, { 0 }, { 0 } };
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("model_input_pars (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_pars,&__pyx_n_s_low_ecc,&__pyx_n_s_tc_equal_to,&__pyx_n_s_vary_tc,&__pyx_n_s_data_mode,&__pyx_n_s_omega_offset_di,&__pyx_n_s_omega_offset_rv,&__pyx_n_s_offsets,&__pyx_n_s_model_in_pars,0};
-    PyObject* values[9] = {0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_pars,&__pyx_n_s_low_ecc,&__pyx_n_s_tc_equal_to,&__pyx_n_s_vary_tc,&__pyx_n_s_data_mode,&__pyx_n_s_omega_offset_di,&__pyx_n_s_omega_offset_rv,&__pyx_n_s_model_in_pars,0};
+    PyObject* values[8] = {0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
-        case  9: values[8] = PyTuple_GET_ITEM(__pyx_args, 8);
         case  8: values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
         case  7: values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
         case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
@@ -3016,48 +3014,43 @@ static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObj
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_low_ecc)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 1); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 1); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_tc_equal_to)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 2); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 2); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_vary_tc)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 3); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 3); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  4:
         if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_data_mode)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 4); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 4); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  5:
         if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_omega_offset_di)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 5); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 5); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  6:
         if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_omega_offset_rv)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 6); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 6); __PYX_ERR(0, 187, __pyx_L3_error)
         }
         case  7:
-        if (likely((values[7] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_offsets)) != 0)) kw_args--;
+        if (likely((values[7] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_model_in_pars)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 7); __PYX_ERR(0, 187, __pyx_L3_error)
-        }
-        case  8:
-        if (likely((values[8] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_model_in_pars)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, 8); __PYX_ERR(0, 187, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, 7); __PYX_ERR(0, 187, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "model_input_pars") < 0)) __PYX_ERR(0, 187, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 9) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 8) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -3068,28 +3061,26 @@ static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObj
       values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
       values[6] = PyTuple_GET_ITEM(__pyx_args, 6);
       values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
-      values[8] = PyTuple_GET_ITEM(__pyx_args, 8);
     }
     __pyx_v_pars = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[0]); if (unlikely(!__pyx_v_pars.memview)) __PYX_ERR(0, 187, __pyx_L3_error)
     __pyx_v_low_ecc = __Pyx_PyObject_IsTrue(values[1]); if (unlikely((__pyx_v_low_ecc == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 187, __pyx_L3_error)
     __pyx_v_tc_equal_to = __Pyx_PyObject_IsTrue(values[2]); if (unlikely((__pyx_v_tc_equal_to == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 187, __pyx_L3_error)
-    __pyx_v_vary_tc = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_vary_tc == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 187, __pyx_L3_error)
+    __pyx_v_vary_tc = __Pyx_PyObject_IsTrue(values[3]); if (unlikely((__pyx_v_vary_tc == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 188, __pyx_L3_error)
     __pyx_v_data_mode = ((PyObject*)values[4]);
     __pyx_v_omega_offset_di = __pyx_PyFloat_AsDouble(values[5]); if (unlikely((__pyx_v_omega_offset_di == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 188, __pyx_L3_error)
-    __pyx_v_omega_offset_rv = __pyx_PyFloat_AsDouble(values[6]); if (unlikely((__pyx_v_omega_offset_rv == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 188, __pyx_L3_error)
-    __pyx_v_offsets = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[7]); if (unlikely(!__pyx_v_offsets.memview)) __PYX_ERR(0, 189, __pyx_L3_error)
-    __pyx_v_model_in_pars = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[8]); if (unlikely(!__pyx_v_model_in_pars.memview)) __PYX_ERR(0, 189, __pyx_L3_error)
+    __pyx_v_omega_offset_rv = __pyx_PyFloat_AsDouble(values[6]); if (unlikely((__pyx_v_omega_offset_rv == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 189, __pyx_L3_error)
+    __pyx_v_model_in_pars = __Pyx_PyObject_to_MemoryviewSlice_ds_double(values[7]); if (unlikely(!__pyx_v_model_in_pars.memview)) __PYX_ERR(0, 189, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 9, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 187, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("model_input_pars", 1, 8, 8, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 187, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cytools.model_input_pars", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_data_mode), (&PyString_Type), 1, "data_mode", 1))) __PYX_ERR(0, 188, __pyx_L1_error)
-  __pyx_r = __pyx_pf_7cytools_model_input_pars(__pyx_self, __pyx_v_pars, __pyx_v_low_ecc, __pyx_v_tc_equal_to, __pyx_v_vary_tc, __pyx_v_data_mode, __pyx_v_omega_offset_di, __pyx_v_omega_offset_rv, __pyx_v_offsets, __pyx_v_model_in_pars);
+  __pyx_r = __pyx_pf_7cytools_model_input_pars(__pyx_self, __pyx_v_pars, __pyx_v_low_ecc, __pyx_v_tc_equal_to, __pyx_v_vary_tc, __pyx_v_data_mode, __pyx_v_omega_offset_di, __pyx_v_omega_offset_rv, __pyx_v_model_in_pars);
 
   /* function exit code */
   goto __pyx_L0;
@@ -3100,7 +3091,7 @@ static PyObject *__pyx_pw_7cytools_1model_input_pars(PyObject *__pyx_self, PyObj
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_7cytools_model_input_pars(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pars, int __pyx_v_low_ecc, int __pyx_v_tc_equal_to, int __pyx_v_vary_tc, PyObject *__pyx_v_data_mode, double __pyx_v_omega_offset_di, double __pyx_v_omega_offset_rv, CYTHON_UNUSED __Pyx_memviewslice __pyx_v_offsets, __Pyx_memviewslice __pyx_v_model_in_pars) {
+static PyObject *__pyx_pf_7cytools_model_input_pars(CYTHON_UNUSED PyObject *__pyx_self, __Pyx_memviewslice __pyx_v_pars, int __pyx_v_low_ecc, int __pyx_v_tc_equal_to, int __pyx_v_vary_tc, PyObject *__pyx_v_data_mode, double __pyx_v_omega_offset_di, double __pyx_v_omega_offset_rv, __Pyx_memviewslice __pyx_v_model_in_pars) {
   double __pyx_v_m1;
   double __pyx_v_m2;
   double __pyx_v_parallax;
@@ -3311,7 +3302,7 @@ static PyObject *__pyx_pf_7cytools_model_input_pars(CYTHON_UNUSED PyObject *__py
  *     ###########################################################################
  *     [m1, m2, parallax, long_an] = pars[0:4]             # <<<<<<<<<<<<<<
  *     [to, p, inc] = pars[5:8]
- *     offsets = pars[9:]
+ *     #offsets = pars[9:]
  */
   __pyx_t_13.data = __pyx_v_pars.data;
   __pyx_t_13.memview = __pyx_v_pars.memview;
@@ -3417,7 +3408,7 @@ __pyx_t_12 = __pyx_memoryview_fromslice(__pyx_t_13, 1, (PyObject *(*)(char *)) _
  *     ###########################################################################
  *     [m1, m2, parallax, long_an] = pars[0:4]
  *     [to, p, inc] = pars[5:8]             # <<<<<<<<<<<<<<
- *     offsets = pars[9:]
+ *     #offsets = pars[9:]
  * 
  */
   __pyx_t_13.data = __pyx_v_pars.data;
@@ -3509,39 +3500,6 @@ __pyx_t_12 = __pyx_memoryview_fromslice(__pyx_t_13, 1, (PyObject *(*)(char *)) _
   __pyx_t_15 = 0;
   __pyx_v_p = __pyx_t_19;
   __pyx_v_inc = __pyx_t_18;
-
-  /* "cytools.pyx":217
- *     [m1, m2, parallax, long_an] = pars[0:4]
- *     [to, p, inc] = pars[5:8]
- *     offsets = pars[9:]             # <<<<<<<<<<<<<<
- * 
- *     ## update varied omega values to omegaDI and omegaRV here
- */
-  __pyx_t_13.data = __pyx_v_pars.data;
-  __pyx_t_13.memview = __pyx_v_pars.memview;
-  __PYX_INC_MEMVIEW(&__pyx_t_13, 0);
-  __pyx_t_2 = -1;
-  if (unlikely(__pyx_memoryview_slice_memviewslice(
-    &__pyx_t_13,
-    __pyx_v_pars.shape[0], __pyx_v_pars.strides[0], __pyx_v_pars.suboffsets[0],
-    0,
-    0,
-    &__pyx_t_2,
-    9,
-    0,
-    0,
-    1,
-    0,
-    0,
-    1) < 0))
-{
-    __PYX_ERR(0, 217, __pyx_L1_error)
-}
-
-__PYX_XDEC_MEMVIEW(&__pyx_v_offsets, 1);
-  __pyx_v_offsets = __pyx_t_13;
-  __pyx_t_13.memview = NULL;
-  __pyx_t_13.data = NULL;
 
   /* "cytools.pyx":225
  *     ## Another way to think of this is arg_peri_di = arg_peri_companion
@@ -4187,9 +4145,9 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_offsets, 1);
   /* "cytools.pyx":187
  *             decsa_model[i] = dec
  * 
- * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,             # <<<<<<<<<<<<<<
- *                      str data_mode, double omega_offset_di, double omega_offset_rv,
- *                      double [:] offsets, double [:] model_in_pars):
+ * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,             # <<<<<<<<<<<<<<
+ *                      bint vary_tc, str data_mode, double omega_offset_di,
+ *                      double omega_offset_rv, double [:] model_in_pars):
  */
 
   /* function exit code */
@@ -4210,7 +4168,6 @@ __PYX_XDEC_MEMVIEW(&__pyx_v_offsets, 1);
   __Pyx_XDECREF(__pyx_v_a_tot_au);
   __Pyx_XDECREF(__pyx_v_k);
   __PYX_XDEC_MEMVIEW(&__pyx_v_pars, 1);
-  __PYX_XDEC_MEMVIEW(&__pyx_v_offsets, 1);
   __PYX_XDEC_MEMVIEW(&__pyx_v_model_in_pars, 1);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
@@ -17363,14 +17320,14 @@ static int __Pyx_InitCachedConstants(void) {
   /* "cytools.pyx":187
  *             decsa_model[i] = dec
  * 
- * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,             # <<<<<<<<<<<<<<
- *                      str data_mode, double omega_offset_di, double omega_offset_rv,
- *                      double [:] offsets, double [:] model_in_pars):
+ * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,             # <<<<<<<<<<<<<<
+ *                      bint vary_tc, str data_mode, double omega_offset_di,
+ *                      double omega_offset_rv, double [:] model_in_pars):
  */
-  __pyx_tuple__14 = PyTuple_Pack(31, __pyx_n_s_pars, __pyx_n_s_low_ecc, __pyx_n_s_tc_equal_to, __pyx_n_s_vary_tc, __pyx_n_s_data_mode, __pyx_n_s_omega_offset_di, __pyx_n_s_omega_offset_rv, __pyx_n_s_offsets, __pyx_n_s_model_in_pars, __pyx_n_s_m1, __pyx_n_s_m2, __pyx_n_s_parallax, __pyx_n_s_long_an, __pyx_n_s_ecc, __pyx_n_s_p, __pyx_n_s_inc, __pyx_n_s_arg_peri, __pyx_n_s_tc, __pyx_n_s_sqrte_sinomega, __pyx_n_s_sqrte_cosomega, __pyx_n_s_a_tot, __pyx_n_s_top, __pyx_n_s_arg_peri_di, __pyx_n_s_arg_peri_rv, __pyx_n_s_ta_temp, __pyx_n_s_half_ea, __pyx_n_s_m_t_tc, __pyx_n_s_delta_t, __pyx_n_s_to, __pyx_n_s_a_tot_au, __pyx_n_s_k); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_tuple__14 = PyTuple_Pack(30, __pyx_n_s_pars, __pyx_n_s_low_ecc, __pyx_n_s_tc_equal_to, __pyx_n_s_vary_tc, __pyx_n_s_data_mode, __pyx_n_s_omega_offset_di, __pyx_n_s_omega_offset_rv, __pyx_n_s_model_in_pars, __pyx_n_s_m1, __pyx_n_s_m2, __pyx_n_s_parallax, __pyx_n_s_long_an, __pyx_n_s_ecc, __pyx_n_s_p, __pyx_n_s_inc, __pyx_n_s_arg_peri, __pyx_n_s_tc, __pyx_n_s_sqrte_sinomega, __pyx_n_s_sqrte_cosomega, __pyx_n_s_a_tot, __pyx_n_s_top, __pyx_n_s_arg_peri_di, __pyx_n_s_arg_peri_rv, __pyx_n_s_ta_temp, __pyx_n_s_half_ea, __pyx_n_s_m_t_tc, __pyx_n_s_delta_t, __pyx_n_s_to, __pyx_n_s_a_tot_au, __pyx_n_s_k); if (unlikely(!__pyx_tuple__14)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__14);
   __Pyx_GIVEREF(__pyx_tuple__14);
-  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(9, 0, 31, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_mnt_HOME_MEGA_Dropbox_EclipseWo, __pyx_n_s_model_input_pars, 187, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 187, __pyx_L1_error)
+  __pyx_codeobj__15 = (PyObject*)__Pyx_PyCode_New(8, 0, 30, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__14, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_mnt_HOME_MEGA_Dropbox_EclipseWo, __pyx_n_s_model_input_pars, 187, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__15)) __PYX_ERR(0, 187, __pyx_L1_error)
 
   /* "cytools.pyx":299
  *     #    print(i,' '+repr(model_in_pars[i]))
@@ -17601,9 +17558,9 @@ PyMODINIT_FUNC PyInit_cytools(void)
   /* "cytools.pyx":187
  *             decsa_model[i] = dec
  * 
- * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to, bint vary_tc,             # <<<<<<<<<<<<<<
- *                      str data_mode, double omega_offset_di, double omega_offset_rv,
- *                      double [:] offsets, double [:] model_in_pars):
+ * def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,             # <<<<<<<<<<<<<<
+ *                      bint vary_tc, str data_mode, double omega_offset_di,
+ *                      double omega_offset_rv, double [:] model_in_pars):
  */
   __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_7cytools_1model_input_pars, NULL, __pyx_n_s_cytools); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 187, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
