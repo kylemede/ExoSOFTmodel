@@ -21,7 +21,7 @@ if sys.argv[-1] == "publish":
 setup(    
     name='ExoSOFTmodel', 
     packages =['ExoSOFTmodel'],
-    version="1.0.22", 
+    version="1.1.2", 
     author='Kyle Mede',
     author_email = 'kylemede@gmail.com',
     url = 'https://github.com/kylemede/ExoSOFTmodel',

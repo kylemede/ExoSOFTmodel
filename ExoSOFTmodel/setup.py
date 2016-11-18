@@ -5,13 +5,16 @@
 # I will use the second version for now and comment out the first.
 
 # Version 1 (simpler)
-"""
+
 from distutils.core import setup
 from Cython.Build import cythonize
 
 setup(
     ext_modules = cythonize(["cytools.pyx"])
 )
+
+## Version 2 does not seem to compile the code into a .so and causes an error,
+## but the above simpler Version 1 code does seem to build properly during install.
 """
 # Version 2 (more robust?)
 from distutils.core import setup
@@ -29,3 +32,4 @@ setup(
       script_args=['build_ext'],   
       options={'build_ext':{'inplace':True, 'force':True}}
       )
+"""
