@@ -96,6 +96,8 @@ class ExoSOFTparams(object):
         """
         Convert directly varied parameters into a comprehensive list
         of those used ans inputs to during model calculations.
+        
+        model_in_params: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
         """        
         model_input_pars(self.direct_pars, self.low_ecc, self.tc_equal_to, 
                    self.vary_tc, self.di_only, self.omega_offset_di, 
@@ -150,7 +152,7 @@ class ExoSOFTparams(object):
         self.stored_pars[10] = self.model_in_pars[12] #a_tot_au
         self.stored_pars[11] = chi_squared
         self.stored_pars[12] = self.model_in_pars[13] #K
-        self.stored_pars[12:] = self.offsets[:]
+        self.stored_pars[13:] = self.offsets[:]
          
     def check_range(self):
         """Determine if all parameters in the full list are within their 
