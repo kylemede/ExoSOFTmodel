@@ -75,10 +75,11 @@ class ExoSOFTpriors(object):
         
         Input array needs the first elements to be:
         [m1, m2, parallax, long_an, e, to, tc, p, inc, arg_peri]
-        This can be the full 'model_in_pars' or a truncated version with 
-        just these parameters.
+        This can be the full 'model_in_pars', 'stored_pars' or a truncated 
+        version with just these parameters.
         """
         # model_in_params: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,arg_peri_di,arg_peri_rv,a_tot_au,K]
+        # stored_pars: [m1,m2,parallax,long_an,e,to,tc,p,inc,arg_peri,a_tot_au,chi_sqr,K,v1,v2...]
         comboPriors = 1.0
         try:
             if self.e_prior:

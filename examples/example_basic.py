@@ -3,7 +3,6 @@ import numpy as np
 import multiprocessing
 import matplotlib.pyplot as plt
 import ExoSOFTmodel
-import emcee
 from six.moves import range
 import KMlogger
 
@@ -36,7 +35,7 @@ def main():
     start_params = np.array(start_params,dtype=np.dtype('d'))
     
     ## calculate the log posterior for the provided data and input parameters
-    ln_post = ExoSOFTmodel.ln_posterior(start_params, Model, Data, Params, Priors)
+    ln_post = ExoSOFTmodel.ln_posterior(start_params, Model)
     
     ## print a few basic results of the fit
     log.info('chi_squared_3d '+str(Model.chi_squared_3d))

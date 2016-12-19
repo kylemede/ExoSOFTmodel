@@ -117,6 +117,7 @@ class ExoSOFTparams(object):
                 self.model_in_pars[m_par_ints[i]]-=360.0
                 #print('now '+str(model_input_pars[m_par_ints[i]]))
         #print(repr(self.model_in_pars))
+    
     def stored_to_direct(self,pars):
         """ take a set of parameters matching 'stored_pars' and make the 
         directly varied versions matching 'direct_pars'.
@@ -244,11 +245,6 @@ def ln_posterior(pars, Model):
               Model.Data.rv_inst_num, Model.Data.rapa_model, 
               Model.Data.decsa_model, Model.Data.rv_model, Model.Params.taea)
                 
-        #print('measured rv ',repr(Data.rv))
-        #print('model rv ',repr(Data.rv_model))
-        ## Calculate chi squareds and then the 3d log likelihood
-        #  NOTE: The log(2*pi*sigma**2) term is not included here as the 
-        #        likelihood is always used as a likelihood ratio.
         chi_sqr_rv, chi_sqr_rapa, chi_sqr_decsa = 0, 0, 0
         if (len(Model.Data.epochs_rv)>0) and (Model.Data.data_mode!='DI'):
             chi_sqr_rv = np.sum((Model.Data.rv-Model.Data.rv_model)**2 / Model.Data.rv_err**2)
@@ -256,16 +252,14 @@ def ln_posterior(pars, Model):
             chi_sqr_rapa = np.sum((Model.Data.rapa-Model.Data.rapa_model)**2 / Model.Data.rapa_err**2)
             chi_sqr_decsa = np.sum((Model.Data.decsa-Model.Data.decsa_model)**2 / Model.Data.decsa_err**2)
         chi_sqr_3d = chi_sqr_rv + chi_sqr_rapa + chi_sqr_decsa
-        #print('chi_sqr_rv',chi_sqr_rv)
-        #print('chi_sqr_rapa',chi_sqr_rapa)
-        #print('chi_sqr_decsa',chi_sqr_decsa)
-        #print('chi_sqr_3d',chi_sqr_3d)
         # Remember that chisqr = -2*log(Likelihood).  OR,
         ln_lik = -0.5*chi_sqr_3d
         #print('ln_lik',ln_lik)
         ## Make version of params with chi_sqr_3d for storing during ExoSOFT
         Model.Params.make_stored(chi_sqr_3d)
+        #print('stored_pars',Model.stored_pars)
         ## store the chi sqr values in model object for printing in ExoSOFT.
+        #print('chi_sqr_3d',chi_sqr_3d)
         Model.chi_squared_3d = chi_sqr_3d
         Model.chi_squared_di = chi_sqr_rapa + chi_sqr_decsa
         Model.chi_squared_rv = chi_sqr_rv

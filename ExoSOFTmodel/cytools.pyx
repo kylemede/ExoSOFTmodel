@@ -228,7 +228,7 @@ def model_input_pars(double [:] pars, bint low_ecc, bint tc_equal_to,
     ## Calculate a_tot and a_tot_au
     a_tot = 0.0
     if m1!=0:
-        top = p*p*pow(const.sec_per_year,2.0)*const.Grav*const.kg_per_msun*(m1+m2)
+        top = pow(p*const.sec_per_year,2.0)*const.Grav*const.kg_per_msun*(m1+m2)
         a_tot =pow( top/(4.0*const.pi*const.pi) , (1.0/3.0))
     a_tot_au = a_tot/const.m_per_au
     
